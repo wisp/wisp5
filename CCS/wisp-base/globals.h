@@ -65,10 +65,10 @@
 #define MODE_USES_SEL   (BIT2)      /* tags only use select when they want to play nice (they don't have to)                    */
 
 // RFID command IDs
-#define CMD_ID_ACK      (0)
-#define CMD_ID_READ     (1)
-#define CMD_ID_WRITE    (2)
-#define CMD_ID_BLOCKWRITE (3)
+#define CMD_ID_ACK      (BIT0)
+#define CMD_ID_READ     (BIT1)
+#define CMD_ID_WRITE    (BIT2)
+#define CMD_ID_BLOCKWRITE (BIT3)
 
 //TIMING----------------------------------------------------------------------------------------------------------------------------//
 //Goal is 56.125/62.500/68.875us. Trying to shoot for the lower to save (a little) power.
