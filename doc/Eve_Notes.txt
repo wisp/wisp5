@@ -1,0 +1,45 @@
+Note for firmware design:
+
+1.1 USE CLR.B instead of CLR in rx.asm &rfid_Handles.asm (or other *.asm, because CLR=CLR.W not CLR.B)
+	correct:
+			CLR   &PRXIFG
+			CLR   &PRXIE
+   	 to	        CLR.B &PRXIFG 
+			CLR.B &PRXIE
+
+1.2 in rfid_Handles.asm 
+	clear PIN_RX_EN after use to save power     
+        such as: 
+	
+
+    ;STEP2: Wakeup and 	  Parse--------------------------------------------------------------------------------------------------------//
+	BIC		#(GIE), SR				;[1] don't need anymore bits, so turn off Rx_SM
+	BIC.B   #PIN_RX_EN, &PRXEOUT    ;@us_change
+	CLR		&TA0CTL
+
+2 (suggested by TI) Configure unused or idle I/O to input/pull down to avoid leakage when it is floating.
+  
+3 make sure check the RN16 when receiving ACK
+
+4 DCO CLK changing frequence should be optimized, in rfid_Handles.asm, DCO CLK is duplicated changed. 
+
+5 (suggest) configure UCSCTL1 before UCSTL0 (have wired issue sometimes if not do this)
+
+6 remember remove debug pin config once finish debuging
+
+7
+
+Note for Users:
+1 8 I/0 pin is reserved for Tx during RFID Tx period (could not been used as Output pin for other app) 
+
+2 one whole I/O port (include Rx pin) interrupt routine is configure in rx.asm,
+should it be accessed for user? 
+
+3 Inside the myACKhook,Readhook,Writehook,
+TA0CTL,TA0CCTL0-TA0CCTL1 make sure TA0 is reseted (TA0 is used as counter in LMP3 in Timer0A1_ISR.asm during rfid_dorfid.asm) 
+
+4(suggest) full driven strengh for output which is driven as power suppy
+
+
+
+
