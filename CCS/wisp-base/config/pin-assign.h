@@ -143,14 +143,19 @@
 // P4.1 MEAS INPUT
 #define 	PIN_MEAS			(BIT1)
 #define		PMEASOUT			(P4OUT)
+#define		PMEASDIR			(P4DIR)
+#define		PMEASSEL0			(P4SEL0)
+#define		PMEASSEL1			(P4SEL1)
 
 // P4.2 - ACCEL_EN - OUTPUT
 #define PIN_ACCEL_EN		BIT2
 #define POUT_ACCEL_EN		P4OUT
+#define PDIR_ACCEL_EN		P4DIR
 
 // P4.3 - ACCEL_CS - OUTPUT
 #define PIN_ACCEL_CS		BIT3
 #define POUT_ACCEL_CS		P4OUT
+#define PDIR_ACCEL_CS		P4DIR
 
 // P4.5 - RECEIVE ENABLE - OUTPUT
 #define     PIN_RX_EN       (BIT5)
@@ -176,6 +181,7 @@
 
 // PJ.1 MEAS_EN (OUTPUT)
 #define		PMEAS_ENOUT			(PJOUT)
+#define		PMEAS_ENDIR			(PJDIR)
 #define 	PIN_MEAS_EN			(BIT1)
 
 
