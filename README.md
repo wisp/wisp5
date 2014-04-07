@@ -1,7 +1,10 @@
 WISP 5
 ====
 
-Welcome to the WISP 5 firmware repository!
+Welcome to the WISP5 firmware repository! 
+
+Schematics for the WISP5 prototype are temporarily available here: http://sensor.cs.washington.edu/wisp5/wisp5-schem.pdf
+
 
 Configuration
 ----
