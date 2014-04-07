@@ -1,7 +1,9 @@
 WISP 5
 ====
 
-Configuring
+Welcome to the WISP 5 firmware repository!
+
+Configuration
 ----
 1. Set your Code Composer Studio v5x workspace to wisp5/ccs and import the following projects:
 
@@ -17,4 +19,5 @@ Configuring
 4. Program and run your WISP5 with simpleAckDemo and ensure that it can communicate with the reader. Use an Impinj Speedway series reader with Tari = 12.5us, link frequency = 160kHz, and reverse modulation type = FM0.
 
 Enjoy the WISP5, and please contribute your comments and bugfixes here!
+
 
