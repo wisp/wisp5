@@ -6,4 +6,5 @@
 	<codegenToolVersion value="4.1.5"/>
 	<isElfFormat value="true"/>
 	<templateProperties value="id=com.ti.common.project.core.emptyProjectTemplate,"/>
+	<isTargetManual value="false"/>
 </projectOptions>
