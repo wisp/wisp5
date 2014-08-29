@@ -24,6 +24,8 @@ Configuration
 
  * **simpleAckDemo** An application which references wisp-base and demonstrates basic communication with an RFID reader.
 
+ * **accelDemo** An application which references wisp-base and demonstrates sampling of the accelerometer and returning acceleration data to the reader through fields of the EPC.
+
 2. Build wisp-base and then the two applications.
 
 3. Program and run your WISP5 with run-once, and wait for LED to pulse to indicate completion.
