@@ -11,6 +11,15 @@
 
 uint8_t usrBank[USRBANK_SIZE];
 
+// Client access to RFID data buffers.
+void WISP_getDataBuffers(WISP_dataStructInterface_t* clientStruct) {
+	clientStruct->epcBuf=&dataBuf[2];
+	clientStruct->writeBufPtr=&(RWData.wrData);
+	clientStruct->blockWriteBufPtr=RWData.bwrBufPtr;
+	clientStruct->blockWriteSizePtr=&(RWData.bwrByteCount);
+	clientStruct->readBufPtr=&usrBank[0];
+}
+
 /**
  *  Registers a callback for ACK event
  */
