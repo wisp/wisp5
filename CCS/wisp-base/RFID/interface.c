@@ -7,6 +7,7 @@
  */
 
 #include "../globals.h"
+#include "rfid.h"
 
 uint8_t usrBank[USRBANK_SIZE];
 

@@ -13,7 +13,7 @@
 ;*/
 ;/***********************************************************************************************************************************/
 
-	.cdecls C, LIST, "../globals.h", "../config/wispGuts.h"
+	.cdecls C, LIST, "../globals.h", "../config/wispGuts.h", "rfid.h"
 	.define "0", SR_SP_OFF
 	.retain
 	.retainrefs

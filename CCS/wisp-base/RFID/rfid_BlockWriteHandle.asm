@@ -17,7 +17,7 @@
 ;*/
 
    .cdecls C,LIST, "../globals.h"
-
+   .cdecls C,LIST, "rfid.h"
 
 R_byteCount	.set  R12				;[0] Number of words in payload
 R_scratch2	.set  R13
