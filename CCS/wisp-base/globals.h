@@ -48,20 +48,20 @@
 //RFID TIMING DEFS                      /*4.08MHz                                                                                   */
 /** @todo map these better based on full range of valid vals!                                                                   */
 //Impinj Uses RTCal = 31.4us = 2.5*TARI (min possible.   RTCal goes between 2.5-3.0 TARI Per Spec)
-#define RTCAL_MIN       (85)
-#define RTCAL_NOM       (100)       /* (really only saw spread from 102 at high power to 96 at low power)                       */
-#define RTCAL_MAX       (150)       /*(this accounts for readers who use up to 3TARI, plus a little wiggle room)                */
-#define RTCAL_OFFS      (12)        /* see documentation for notes.                                                             */
+#define RTCAL_MIN       (2*85)
+#define RTCAL_NOM       (2*100)     /* (really only saw spread from 102 at high power to 96 at low power)                       */
+#define RTCAL_MAX       (2*150)     /*(this accounts for readers who use up to 3TARI, plus a little wiggle room)                */
+#define RTCAL_OFFS      (2*12)      /* see documentation for notes.                                                             */
 
 //Impinj Uses TRCal = 50.2us = 1.6*RTCAL(middle of road. TRCal goes between 1.1-3 RTCAL per spec. also said, 2.75-9.00 TARI)
-#define TRCAL_MIN       (124)
-#define TRCAL_NOM       (193)       /* (really only saw spread from 193 at high power to 192 at low power)                      */
-#define TRCAL_MAX       (451)       /* (this accounts for readers who use up to 9TARI)                                          */
+#define TRCAL_MIN       (2*140)
+#define TRCAL_NOM       (2*265)     /* (really only saw spread from 193 at high power to 192 at low power)                      */
+#define TRCAL_MAX       (2*451)     /* (this accounts for readers who use up to 9TARI)                                          */
 
 //TIMING----------------------------------------------------------------------------------------------------------------------------//
 //Goal is 56.125/62.500/68.875us. Trying to shoot for the lower to save (a little) power.
 //Note: 1 is minVal here due to the way decrement timing loop works. 0 will act like (0xFFFF+1)!
-#define TX_TIMING_QUERY (12)/*53.5-60us (depends on which Q value is loaded). */
+#define TX_TIMING_QUERY (24)/*53.5-60us (depends on which Q value is loaded). */
 #define TX_TIMING_ACK   (20)/*60.0us*/  //(14,58.6us)
 
 #define TX_TIMING_QR    (52)//58.8us
@@ -70,7 +70,7 @@
 #define TX_TIMING_READ  (29)//58.0us
 #define TX_TIMING_WRITE (31)//60.4us
 
-#define FORCE_SKIP_INTO_RTCAL   (12)                    /* after delim, wait till data0 passes before starting TA1_SM. note     */
+#define FORCE_SKIP_INTO_RTCAL   (24)                    /* after delim, wait till data0 passes before starting TA1_SM. note     */
                                                             /* changing this will affect timing criteria on RTCal measurement       */
 //PROTOCOL DEFS---------------------------------------------------------------------------------------------------------------------//
 //(if # is rounded to 8 that is so  cmd[n] was finished being shifted in)

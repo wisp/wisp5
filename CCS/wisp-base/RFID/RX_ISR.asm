@@ -1,4 +1,4 @@
-	.cdecls C, LIST, "../globals.h", "rfid.h"
+	.cdecls C, LIST, "../globals.h"
 ;/************************************************************************************************************************************
 ;* OLD DATA. TODO.                                     PORT 1 ISR (Starting a Command Receive)                                       *
 ;* Theory: RX ISR Will perform two different functions:                                                                              *
@@ -27,7 +27,12 @@ RX_ISR:							;[X]t=2.24us into delim (measured @ 12.84MHz) -> each check is 6cy
 	;*********************************************************************************************************************************
 	; TOO EARLY (DELIM <6us)
 	;*********************************************************************************************************************************
-
+	;;;;;;@Saman compatibility with other readers
+	;; MCLK is 8MHz
+	;; about 1us to enter the ISR
+	;; For each of BIT.B 3 Cycles
+	;; For each JNZ or JZ not taken 2 Cycles
+	;; For JNZ or JZ taken 3 or 4 cycles
 ;	DEBUG
 ;	BIS.B 	#PIN_LED, 	&PLEDOUT
 	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
@@ -36,8 +41,50 @@ RX_ISR:							;[X]t=2.24us into delim (measured @ 12.84MHz) -> each check is 6cy
 	JNZ		badDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[3]t=5.64..5.88us
 	JNZ		badDelim				;[2]
+
+	;@Saman Compatibility with other readers
+	;;;Around 2.7us
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=5.64..5.88us
+	JNZ		badDelim				;[2]
+
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim
+	;Around 8us
+
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=5.64..5.88us
+	JNZ		badDelim				;[2]
+
+	;@Saman Compatibility with other readers
+	;;;Around 2.7us
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=5.64..5.88us
+	JNZ		badDelim				;[2]
+
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	JNZ		badDelim
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;*********************************************************************************************************************************
-	; JUST RIGHT (6.86us < DELIM <18.14us @ 4.08MHz)
+	; JUST RIGHT (8us < DELIM <16us @ 8MHz)
 	;*********************************************************************************************************************************
 	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
 	JNZ		goodDelim				;[2]
@@ -47,21 +94,45 @@ RX_ISR:							;[X]t=2.24us into delim (measured @ 12.84MHz) -> each check is 6cy
 	JNZ		goodDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[4]t=10.54-10.78us
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=11.76-12.01us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	;;Aroudn 16uS
+
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=12.99-13.24us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=8.09-8.33us
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=14.22-14.46us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=9.31-9.56us
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=15.44-15.69us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=10.54-10.78us
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=16.67-16.91us
-	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=17.89-18.14us
-	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	JNZ		goodDelim
+
 	;*********************************************************************************************************************************
 	; ELSE TOO LONG!! (anything past here was too long)
 	;*********************************************************************************************************************************
+
 badDelim:							; Just Go Back To Sleep...
 	BIT.B	R15, R14
 	BIC		#CCIFG, &TA0CCTL0		;[] clear the interrupt flag for Timer0A0 Compare (safety)
@@ -101,6 +172,7 @@ startupT0A0_ISR:
 	ADD 	#36, &TA0R				;The modified code seem to add some commands that increase the amount of waiting after finding the Good Delimiter.
 	;We just need to wait for 1 Tari (in this case 12.5us) which is equal to 50 cycles for 4MHz before counting the length of RTcal but instead in this code we wait for about
 	;86 cycles and after that clear the TA0R. This is the reason we added #36 to TA0R.
+
 	RETI
 
 	;	//Now wait into data0 somewhere!

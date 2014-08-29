@@ -15,24 +15,24 @@
 	.def  TxClock, RxClock
 
 TxClock:
-	; Tx desired clock frequency is about 2.67MHz which is set here.
-
-	MOV.B		#(0xA5), &CSCTL0_H;[] Switch to corr Tx frequency
-	MOV.W		#(DCOFSEL0), &CSCTL1;
-	MOV.W		#(SELA_0|SELS_3|SELM_3), &CSCTL2;
-	MOV.W		#(DIVA_0|DIVS_0|DIVM_0), &CSCTL3;
+	MOV.B           #(0xA5), &CSCTL0_H ;[] Switch to corr Tx frequency 10.5MHz
+	MOV.W           #(DCORSEL|DCOFSEL_6), &CSCTL1 ;
+	MOV.W           #(SELA_0|SELM_3), &CSCTL2     ;
+	BIS.W           #(SELS_3), &CSCTL2
+	MOV.W           #(DIVA_0|DIVS_1|DIVM_1), &CSCTL3 ;
+	BIS.W           #(MODCLKREQEN|SMCLKREQEN|MCLKREQEN|ACLKREQEN), &CSCTL6
 
 	RETA
 
 
 RxClock:
-	; Rx desired clock frequency is 4MHz which is set here.
-
-	MOV.B		#(0xA5), &CSCTL0_H;[] Switch to corr Rx frequency
-	MOV.W		#(DCOFSEL0|DCOFSEL1), &CSCTL1;
-	MOV.W		#(SELA_0|SELS_3|SELM_3), &CSCTL2;
-	MOV.W		#(DIVA_0|DIVS_0|DIVM_0), &CSCTL3;
-
+	MOV.B           #(0xA5), &CSCTL0_H ;[] Switch to corr Rx frequency  8MHz
+	MOV.W           #(DCORSEL|DCOFSEL_4), &CSCTL1 ;
+	MOV.W           #(SELA_0|SELM_3), &CSCTL2     ;
+	BIS.W           #(SELS_3), &CSCTL2
+	MOV.W           #(DIVA_0|DIVS_0|DIVM_0), &CSCTL3 ;
+	BIS.W           #(MODCLKREQEN|SMCLKREQEN|MCLKREQEN|ACLKREQEN), &CSCTL6
+	
 	RETA
 
 	.end

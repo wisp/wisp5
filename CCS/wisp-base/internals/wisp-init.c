@@ -52,10 +52,10 @@ void WISP_init(void) {
 //  PHOLDOUT |= PIN_HOLD;                                                   /* Hold the LDO ON                                      */
     PRXEOUT |= PIN_RX_EN; /** TODO: enable PIN_RX_EN only when needed in the future */
 
-    // TODO Try running the system as fast as possible here for power savings
     CSCTL0_H = 0xA5;
-    CSCTL1 = DCOFSEL0 + DCOFSEL1; //4MHz
-    CSCTL2 = SELA_0 + SELS_3 + SELM_3;
+    CSCTL1 = DCORSEL + DCOFSEL_3; //8MHz
+    CSCTL2 = SELA_0 + SELM_3;
+    CSCTL2 |= SELS_3;
     CSCTL3 = DIVA_0 + DIVS_0 + DIVM_0;
 
     // Initialize Gen2 standard memory banks
