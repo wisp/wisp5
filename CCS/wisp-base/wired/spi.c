@@ -41,11 +41,13 @@ BOOL SPI_initialize() {
 
 //  UCA1CTL0 = UCMST | UCSYNC | UCCKPH | UCMSB;      // This instruction seem to work wrong since UA1CTL0 is an 8-bit register.
     UCA1CTL0 = (UCMST>>8) | (UCSYNC>>8) | (UCCKPH>>8) | (UCMSB>>8);
-  UCA1CTL1 = UCSSEL_2 | UCSWRST;
-    UCA1BR0 = 2; // 2MHz for 4MHz clock
+    UCA1CTL1 = UCSSEL_3 | UCSWRST;
+    UCA1BR0 = 3; // 500KHz for 4MHz clock
     UCA1BR1 = 0;
     UCA1IFG = 0;
     UCA0MCTLW = 0;  // No modulation, I don't think it is vital to write this command since the default should be like that.
+//	BITSET(P2SEL1 , PIN_ACCEL_SCLK | PIN_ACCEL_MISO | PIN_ACCEL_MOSI);
+//	BITCLR(P2SEL0 , PIN_ACCEL_SCLK | PIN_ACCEL_MISO | PIN_ACCEL_MOSI);
     BITCLR(UCA1CTL1, UCSWRST);
 
     // State variable initialization
@@ -112,7 +114,7 @@ BOOL SPI_transaction(uint8_t* rxBuf, uint8_t* txBuf, uint16_t size) {
     spiSM.pcRxBuffer = rxBuf;
     spiSM.pcTxBuffer = txBuf;
 
-    BITSET(UCA1IE, UCTXIE | UCRXIE);
+    //BITSET(UCA1IE, UCTXIE | UCRXIE);
 
     do {
         // Reset receive flag
@@ -122,8 +124,10 @@ BOOL SPI_transaction(uint8_t* rxBuf, uint8_t* txBuf, uint16_t size) {
         UCA1TXBUF = spiSM.pcTxBuffer[spiSM.uiCurTx];
 
         // Sleep until receive occurs
-        do {__bis_SR_register(LPM0_bits | GIE); } while(!spiSM.bNewDataReceived);
-
+        while(!(UCA1IFG & UCRXIFG));
+        spiSM.pcRxBuffer[spiSM.uiCurRx] = UCA1RXBUF;
+        UCA1IFG &= ~UCRXIFG;
+        UCA1IFG &= ~UCTXIFG;
         // Move to next TX and RX index
         spiSM.uiCurTx++;
         spiSM.uiCurRx++;
@@ -131,26 +135,25 @@ BOOL SPI_transaction(uint8_t* rxBuf, uint8_t* txBuf, uint16_t size) {
 
     } while(spiSM.uiBytesToSend);
 
-    BITCLR(UCA1IE, UCTXIE | UCRXIE);
 
     return SUCCESS;
 }
 
 
 /// Be careful that FR5969 has 16 bits UCA1RXBUF and UCA1TXBUF other than F5310 that had 8 bits.
-#pragma vector=USCI_A1_VECTOR
-__interrupt void SPI_ISR(void) {
-
-    if(UCA1IFG & UCRXIFG){
-        spiSM.pcRxBuffer[spiSM.uiCurRx] = UCA1RXBUF;
-        spiSM.bNewDataReceived = TRUE;
-        UCA1IFG &= ~UCRXIFG;    // Not sure it is vital to write this command or not but just as being punctilious
-        __bic_SR_register_on_exit(LPM4_bits);
-    }
-
-    if(UCA1IFG & UCTXIFG){
-        UCA1IFG &= ~UCTXIFG;
-    }
+//#pragma vector=USCI_A1_VECTOR
+//__interrupt void SPI_ISR(void) {
+//
+//    if(UCRXIFG){
+//        spiSM.pcRxBuffer[spiSM.uiCurRx] = UCA1RXBUF;
+//        spiSM.bNewDataReceived = TRUE;
+//        UCA1IFG &= ~UCRXIFG;    // Not sure it is vital to write this command or not but just as being punctilious
+//        __bic_SR_register_on_exit(LPM4_bits);
+//    }
+//
+//    if(UCTXIFG){
+//        UCA1IFG &= ~UCTXIFG;
+//    }
 
 
 
@@ -169,4 +172,4 @@ __interrupt void SPI_ISR(void) {
     //
     //  }
 
-}
+//}

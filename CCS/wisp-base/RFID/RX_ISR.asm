@@ -1,4 +1,4 @@
-	.cdecls C, LIST, "../globals.h"
+	.cdecls C, LIST, "../globals.h", "rfid.h"
 ;/************************************************************************************************************************************
 ;* OLD DATA. TODO.                                     PORT 1 ISR (Starting a Command Receive)                                       *
 ;* Theory: RX ISR Will perform two different functions:                                                                              *

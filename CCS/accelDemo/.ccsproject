@@ -3,9 +3,11 @@
 <projectOptions>
 	<deviceVariant value="MSP430FR5969"/>
 	<deviceFamily value="MSP430"/>
-	<codegenToolVersion value="4.3.3"/>
+	<codegenToolVersion value="4.1.5"/>
 	<isElfFormat value="true"/>
 	<connection value="common/targetdb/connections/TIMSP430-USB.xml"/>
-	<createSlaveProjects value=""/>
-	<templateProperties value="id=com.ti.common.project.core.emptyProjectTemplate,"/>
+	<linkerCommandFile value="lnk_msp430fr5969.cmd"/>
+	<rts value="libc.a"/>
+	<templateProperties value="id=com.ti.common.project.core.emptyProjectWithMainTemplate_msp430,"/>
+	<isTargetManual value="false"/>
 </projectOptions>

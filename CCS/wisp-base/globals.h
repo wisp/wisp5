@@ -58,18 +58,6 @@
 #define TRCAL_NOM       (193)       /* (really only saw spread from 193 at high power to 192 at low power)                      */
 #define TRCAL_MAX       (451)       /* (this accounts for readers who use up to 9TARI)                                          */
 
-//RFID MODE DEFS
-#define MODE_STD        (0)         /* tag only responds up to ACKs (even ignores ReqRNs)                                       */
-#define MODE_READ       (BIT0)      /* tag responds to read commands                                                            */
-#define MODE_WRITE      (BIT1)      /* tag responds to write commands                                                           */
-#define MODE_USES_SEL   (BIT2)      /* tags only use select when they want to play nice (they don't have to)                    */
-
-// RFID command IDs
-#define CMD_ID_ACK      (BIT0)
-#define CMD_ID_READ     (BIT1)
-#define CMD_ID_WRITE    (BIT2)
-#define CMD_ID_BLOCKWRITE (BIT3)
-
 //TIMING----------------------------------------------------------------------------------------------------------------------------//
 //Goal is 56.125/62.500/68.875us. Trying to shoot for the lower to save (a little) power.
 //Note: 1 is minVal here due to the way decrement timing loop works. 0 will act like (0xFFFF+1)!
@@ -134,21 +122,6 @@ typedef struct {
 }RFIDstruct;                                /* in MODE_USES_SEL!!                                                               */
 
 extern RFIDstruct   rfid;
-
-// Access macros for above, please rewrite as functions
-#define WISP_setMode(newMode) rfid.mode=newMode
-
-#define WISP_setAbortConditions(newAbortConditions) rfid.abortOn=newAbortConditions
-
-// Client interface to read, write, and EPC memory buffers
-typedef struct {
-	uint8_t* epcBuf;
-	uint16_t* writeBufPtr;
-	uint8_t* blockWriteBufPtr;
-	uint16_t* blockWriteSizePtr;
-	uint8_t* readBufPtr;
-} WISP_dataStructInterface_t;
-
 
 //THE RW STRUCT FOR ACCESS STATE VARS
 typedef struct {

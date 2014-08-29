@@ -7,8 +7,18 @@
  */
 
 #include "../globals.h"
+#include "rfid.h"
 
 uint8_t usrBank[USRBANK_SIZE];
+
+// Client access to RFID data buffers.
+void WISP_getDataBuffers(WISP_dataStructInterface_t* clientStruct) {
+	clientStruct->epcBuf=&dataBuf[2];
+	clientStruct->writeBufPtr=&(RWData.wrData);
+	clientStruct->blockWriteBufPtr=RWData.bwrBufPtr;
+	clientStruct->blockWriteSizePtr=&(RWData.bwrByteCount);
+	clientStruct->readBufPtr=&usrBank[0];
+}
 
 /**
  *  Registers a callback for ACK event
@@ -36,4 +46,20 @@ void WISP_registerCallback_WRITE(void(*fnPtr)(void)){
  */
 void WISP_registerCallback_BLOCKWRITE(void(*fnPtr)(void)){
 	RWData.bwrHook =((void*)(fnPtr));
+}
+
+
+/**
+ * Sets mode parameters for the RFID state machine
+ */
+void WISP_setMode(uint8_t mode) {
+	rfid.mode = mode;
+}
+
+/**
+ * Sets abort conditions for the RFID state machine. This dictates when
+ * WISP comm code will abort and return control to client code.
+ */
+void WISP_setAbortConditions(uint8_t abortOn) {
+	rfid.abortOn = abortOn;
 }

@@ -14,6 +14,7 @@
 
 ;/INCLUDES----------------------------------------------------------------------------------------------------------------------------
     .cdecls C,LIST, "../globals.h"
+    .cdecls C,LIST, "rfid.h"
 	.def  handleQuery, handleAck, handleQR, handleQA, handleReqRN, handleSelect
 	.global TxClock, RxClock
 
