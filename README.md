@@ -9,9 +9,11 @@ http://sensor.cs.washington.edu/wisp5/wisp5-schem.pdf
 Interested in building a host-side application to talk with WISPs? Look no further than the SLLURP library for configuring LLRP-based RFID readers:
 https://github.com/ransford/sllurp
 
-Important Notice
+Important Notices
 ----
 Please note that the MSP430FR5969 included on the WISP 5 is not compatible with TI Code Composer Studio versions prior to version 6. Please use CCS v6 or above.
+
+The WISP 5 is intended to be compatible with Impinj Speedway and Impinj Speedway Revolution series FCC-compliant readers. For updates about compatibility with other readers, please contact the developers.
 
 Configuration
 ----
