@@ -135,11 +135,6 @@ typedef struct {
 
 extern RFIDstruct   rfid;
 
-// Access macros for above, please rewrite as functions
-#define WISP_setMode(newMode) rfid.mode=newMode
-
-#define WISP_setAbortConditions(newAbortConditions) rfid.abortOn=newAbortConditions
-
 // Client interface to read, write, and EPC memory buffers
 typedef struct {
 	uint8_t* epcBuf;
