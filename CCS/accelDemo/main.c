@@ -59,14 +59,32 @@ void main(void) {
 
 	WISP_init();
 
-	BITSET(PDIR_AUX3 , PIN_AUX3);
-	__delay_cycles(50);
-	BITCLR(P1OUT , PIN_AUX3);
-	__delay_cycles(50);
-	BITSET(P1OUT , PIN_AUX3);
-	__delay_cycles(50);
 
+    // Register callback functions with WISP base routines
+    WISP_registerCallback_ACK(&my_ackCallback);
+    WISP_registerCallback_READ(&my_readCallback);
+    WISP_registerCallback_WRITE(&my_writeCallback);
+    WISP_registerCallback_BLOCKWRITE(&my_blockWriteCallback);
 
+    // Get access to EPC, READ, and WRITE data buffers
+    WISP_getDataBuffers(&wispData);
+
+    // Set up operating parameters for WISP comm routines
+    // Set mode: Tag responds to R/W and obeys the sel cmd
+    WISP_setMode(MODE_READ | MODE_WRITE | MODE_USES_SEL);
+
+    // Set abort conditions: Exits WISP_doRFID() when the following events happen:
+    WISP_setAbortConditions(CMD_ID_READ | CMD_ID_WRITE | CMD_ID_ACK);
+
+//    // Debug output
+//	BITSET(PDIR_AUX3 , PIN_AUX3);
+//	__delay_cycles(50);
+//	BITCLR(P1OUT , PIN_AUX3);
+//	__delay_cycles(50);
+//	BITSET(P1OUT , PIN_AUX3);
+//	__delay_cycles(50);
+
+	// Accelerometer power up sequence
 	BITSET(P4SEL1 , PIN_ACCEL_EN);
 	BITSET(P4SEL0 , PIN_ACCEL_EN);
 
@@ -108,21 +126,6 @@ void main(void) {
 	}
 	__delay_cycles(5);
 	ACCEL_singleSample(&accelOut);
-
-	// Set up desired local variables
-
-    // Register callback functions with WISP base routines
-    WISP_registerCallback_ACK(&my_ackCallback);
-    WISP_registerCallback_READ(&my_readCallback);
-    WISP_registerCallback_WRITE(&my_writeCallback);
-    WISP_registerCallback_BLOCKWRITE(&my_blockWriteCallback);
-
-    // Set up operating parameters for WISP comm routines
-    // Set mode: Tag responds to R/W and obeys the sel cmd
-    WISP_setMode(MODE_READ | MODE_WRITE | MODE_USES_SEL);
-
-    // Set abort conditions: Exits WISP_doRFID() when the following events happen:
-    WISP_setAbortConditions(CMD_ID_READ | CMD_ID_WRITE | CMD_ID_ACK);
 
     // Set up static EPC
 	wispData.epcBuf[0] = 0x05; // WISP version
