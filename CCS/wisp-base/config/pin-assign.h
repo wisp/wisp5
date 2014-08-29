@@ -210,7 +210,7 @@
     PJDIR = PIN_LED2;\
     P2DIR = PIN_TX;\
     P3DIR = 0x00;\
-    P4DIR = PIN_ACCEL_CS | PIN_ACCEL_EN | PIN_LED1;\
+    P4DIR = PIN_ACCEL_CS | PIN_LED1;\
 
 #endif /* ~__ASSEMBLER__ */
 
