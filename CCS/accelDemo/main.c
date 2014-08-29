@@ -12,7 +12,7 @@
 
 // A pointer to the data struct owned by the WISP library which contains EPC
 //  memory, read and write buffers.
-WISP_dataStruct_t wispData;
+WISP_dataStructInterface_t wispData;
 threeAxis_t_8 accelOut;
 
 /**
@@ -57,7 +57,7 @@ void my_blockWriteCallback  (void) {
 void main(void) {
 
 
-	WISP_init(&wispData);
+	WISP_init();
 
 	BITSET(PDIR_AUX3 , PIN_AUX3);
 	__delay_cycles(50);
