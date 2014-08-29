@@ -1,23 +1,20 @@
 /*
- * catchall.c
+ * @file catchall.c
  *
- *  Created on: Mar 29, 2014
- *      Author: anparks
+ * @author Aaron Parks
  */
 
 
 #include <msp430.h>
 
 
-/*************************************************************************************************************************************
-*                             EMPTY ISRS                                                                                             *
-* Operation: These interrupt vectors should never get called. we put them here just in case they do to avoid the fatal reboot        *
-*
-* *Using #pragma configuration for future portability. could use '.intx' for our compiler instead.
-*
-* List of MSP430F5521 ISRS, combining definitions from both datasheet and msp430x552x.h for clarity. 'SAFE' means it has a handled
-*   designated somewhere else in the project.
-*************************************************************************************************************************************/
+/**
+ * If interrupt vectors are left unassigned and are called, the CPU will reset.
+ *
+ * This function catches un-handled interrupts to reduce confusing resets
+ * during debugging. If your application handles certain interrupts, comment
+ * them out here to solve linker placement errors.
+ */
 #pragma vector=AES256_VECTOR          // ".int30" 0xFFCC AES256
 #pragma vector=RTC_VECTOR             // ".int31" 0xFFCE RTC
 #pragma vector=PORT4_VECTOR           // ".int32" 0xFFD0 Port 4
