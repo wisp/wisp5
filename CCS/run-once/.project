@@ -3,6 +3,7 @@
 	<name>run-once</name>
 	<comment></comment>
 	<projects>
+		<project>wisp-base</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
