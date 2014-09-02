@@ -49,7 +49,7 @@
 /** @todo map these better based on full range of valid vals!                                                                   */
 //Impinj Uses RTCal = 31.4us = 2.5*TARI (min possible.   RTCal goes between 2.5-3.0 TARI Per Spec)
 #define RTCAL_MIN       (2*85)
-#define RTCAL_NOM       (2*100)     /* (really only saw spread from 102 at high power to 96 at low power)                       */
+#define RTCAL_NOM       (2*125)     /* (really only saw spread from 102 at high power to 96 at low power)                       */
 #define RTCAL_MAX       (2*150)     /*(this accounts for readers who use up to 3TARI, plus a little wiggle room)                */
 #define RTCAL_OFFS      (2*12)      /* see documentation for notes.                                                             */
 
