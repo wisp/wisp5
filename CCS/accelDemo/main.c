@@ -76,17 +76,11 @@ void main(void) {
     // Set abort conditions: Exits WISP_doRFID() when the following events happen:
     WISP_setAbortConditions(CMD_ID_READ | CMD_ID_WRITE | CMD_ID_ACK);
 
-//    // Debug output
-//	BITSET(PDIR_AUX3 , PIN_AUX3);
-//	__delay_cycles(50);
-//	BITCLR(P1OUT , PIN_AUX3);
-//	__delay_cycles(50);
-//	BITSET(P1OUT , PIN_AUX3);
-//	__delay_cycles(50);
 
 	// Accelerometer power up sequence
-	BITSET(P4SEL1 , PIN_ACCEL_EN);
-	BITSET(P4SEL0 , PIN_ACCEL_EN);
+	BITCLR(POUT_ACCEL_EN , PIN_ACCEL_EN);
+	__delay_cycles(100);
+	BITSET(POUT_ACCEL_EN , PIN_ACCEL_EN);
 
 	accelOut.x = 1;
 	accelOut.y = 1;
@@ -107,7 +101,7 @@ void main(void) {
 	while(accelOut.x != 0xAD){
 		__delay_cycles(5);
 		wispData.epcBuf[9] = accelOut.x;
-		WISP_doRFID();
+//		WISP_doRFID();
 
 		ACCEL_readID(&accelOut);
 
@@ -121,7 +115,7 @@ void main(void) {
 	while((accelOut.x & 192) != 0x40){
 		__delay_cycles(5);
 		wispData.epcBuf[9] = accelOut.x;
-		WISP_doRFID();
+//		WISP_doRFID();
 		ACCEL_readStat(&accelOut);
 	}
 	__delay_cycles(5);
