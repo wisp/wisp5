@@ -7,7 +7,7 @@
 #include "accel.h"
 #include "accel_registers.h"
 #include "../globals.h"
-#include "../Timing/timer.h"
+#include "../timing/timer.h"
 #include "../wired/spi.h"
 
 ///////////////////////////////////////////////////////////////////////////////
