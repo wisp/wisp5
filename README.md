@@ -30,7 +30,7 @@ Configuration
 
 3. Program and run your WISP5 with run-once, and wait for LED to pulse to indicate completion.
 
-4. Program and run your WISP5 with simpleAckDemo and ensure that it can communicate with the reader. Use an Impinj Speedway series reader with Tari = 12.5us, link frequency = 160kHz, and reverse modulation type = FM0.
+4. Program and run your WISP5 with simpleAckDemo and ensure that it can communicate with the reader. Use an Impinj Speedway series reader with Tari = 6.25us or 7.14us, link frequency = 640kHz, and reverse modulation type = FM0.
 
 Enjoy the WISP5, and please contribute your comments and bugfixes here!
 
