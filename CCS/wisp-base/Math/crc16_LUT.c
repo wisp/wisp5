@@ -1,5 +1,7 @@
+#include <stdint.h>
+
 //A good TI App Note once showed how to auto-generate this (SLA221)
-const unsigned int crc16_LUT[256] = {
+const uint16_t crc16_LUT[256] = {
     0x0000, 0x1021, 0x2042, 0x3063,
     0x4084, 0x50A5, 0x60C6, 0x70E7,
     0x8108, 0x9129, 0xA14A, 0xB16B,
@@ -66,12 +68,13 @@ const unsigned int crc16_LUT[256] = {
     0x2E93, 0x3EB2, 0x0ED1, 0x1EF0 };
     
 //A good TI App Note once showed how to do this (SLA221)
-unsigned int crc16_cLUT(unsigned char *pmsg, unsigned int msg_size) {
+uint16_t crc16_cLUT(uint8_t *pmsg, uint8_t msg_size) {
     unsigned int crc = 0xFFFF;      // load up with initial remainder
     
     while(msg_size--) {
         crc = crc16_LUT[((crc >> 8) ^ *pmsg++)] ^ (crc << 8);   // normal
     }
     
-    return(crc ^ 0xFFFF);           //XOR on exit
+    return crc;
 }
+
