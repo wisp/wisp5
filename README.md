@@ -3,6 +3,8 @@ WISP 5
 
 Welcome to the WISP5 firmware repository!
 
+Got questions? Check out the tutorials and discussion board at: http://wisp5.wikispaces.com
+
 Schematics for the WISP5 prototype are temporarily available here: 
 http://sensor.cs.washington.edu/wisp5/wisp5-schem.pdf
 
