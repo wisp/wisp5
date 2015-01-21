@@ -205,7 +205,7 @@ extern uint16_t crc16Bits_ccitt (uint16_t preload,uint8_t *dataPtr, uint16_t num
 
 //LUT for Table Driven Methods
 extern uint16_t crc16_LUT[256];
-extern uint16_t crc16_cLUT      (uint16_t crc16_cLUT(uint8_t *pmsg, uint8_t msg_size);
+extern uint16_t crc16_cLUT(uint8_t *pmsg, uint8_t msg_size);
 
 #endif /* __ASSEMBLER__ */
 #endif /* GLOBALS_H_ */
