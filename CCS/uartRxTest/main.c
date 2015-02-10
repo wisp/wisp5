@@ -105,45 +105,52 @@ void main(void) {
 #endif
 
 #if defined(SEND)
-	uint8_t s = 1;
+	uint8_t s[10] = {1,2,3,4,5,0,7,8,9,10};
 #endif
 
 #if defined(RECEIVE)
-	uint8_t r;
+	uint8_t r[10] = {0};
 #endif
 
 	while (FOREVER) {
 
 #if defined(RECEIVE) && defined(ASYNC)
 		// Tell UART module to async receive
-		UART_asyncReceive(&r, 1, '\0');
+		UART_asyncReceive(r, 10, '\0');
 #endif
 
 #if defined(SEND)
 		//UART_critSend(&s, 1);
 		//UART_send(&s, 1);
-		UART_asyncSend(&s, 1);
-		s++;
+		UART_asyncSend(s, 10);
 		Timer_LooseDelay(40000);
 #endif
 
 #if defined(RECEIVE) && defined(NORMAL)
 		// Receive, block
-		UART_receive(&r, 1, '\0');
+		UART_receive(r, 10, '\0');
 #elif defined(RECEIVE) && defined(ASYNC)
 		// Wait until async is done, block
 		while(!UART_isRxDone());
 #elif defined(RECEIVE) && defined(CRITICAL)
 		// Receive without interrupt use, block
-		UART_critReceive(&r, 1, '\0');
+		UART_critReceive(r, 10, '\0');
 #endif
 
 #if defined(RECEIVE)
-		// Enable LED if we received an odd value
-		if(r&0x1)
-			BITSET(PLED1OUT, PIN_LED1);
-		else
-			BITCLR(PLED1OUT, PIN_LED1);
+
+		if(    r[0]==1
+		    && r[1]==2
+		    && r[2]==3
+		    && r[3]==4
+		    && r[4]==5
+		    && r[5]==0
+		    && r[6]==0
+		    && r[7]==0
+		    && r[8]==0
+		    && r[9]==0)
+		    BITTOG(PLED1OUT, PIN_LED1);
+
 #endif
 	}
 }

@@ -76,7 +76,7 @@ void UART_asyncSend(uint8_t* txBuf, uint16_t size) {
     UART_SM.txPtr = txBuf;
     UART_SM.txBytesRemaining = size - 1;
 
-    UCA0IV &= ~(USCI_UART_UCTXIFG); // Clear byte completion flag
+    UCA0IFG &= ~(USCI_UART_UCTXIFG); // Clear byte completion flag
 
     UCA0IE |= UCTXIE; // Enable USCI_A0 TX interrupt
     UCA0TXBUF = *(UART_SM.txPtr++); // Load in first byte
@@ -154,6 +154,8 @@ void UART_asyncReceive(uint8_t* rxBuf, uint16_t size, uint8_t terminate) {
     UART_SM.rxBytesRemaining = size;
     UART_SM.rxTermChar = terminate;
 
+    UCA0IFG &= ~(UCRXIFG); // Clear byte completion flag
+
     UCA0IE |= UCRXIE; // Enable USCI_A0 RX interrupt
 
     // The rest of the reception will be completed by the RX ISR (which
@@ -193,7 +195,7 @@ void UART_critReceive(uint8_t* rxBuf, uint16_t size, uint8_t terminate) {
     UART_SM.rxBytesRemaining = size;
     UART_SM.rxTermChar = terminate;
 
-    //UCA0IV &= ~(USCI_UART_UCRXIFG); // Clear byte completion flag
+    UCA0IFG &= ~(UCRXIFG); // Clear byte completion flag
 
     while (UART_SM.rxBytesRemaining--) {
         while (!(UCA0IFG & UCRXIFG))
@@ -233,14 +235,17 @@ uint8_t UART_isRxDone() {
 #pragma vector=USCI_A0_VECTOR
 __interrupt void USCI_A0_ISR(void) {
     BITTOG(PLED2OUT, PIN_LED2);
+    uint8_t rec;
+
     switch (__even_in_range(UCA0IV, USCI_UART_UCTXCPTIFG)) {
     case USCI_NONE:
         break;
     case USCI_UART_UCRXIFG:
-        uint8_t rec = UCA0RXBUF; // Read next byte
-
         if (UART_SM.rxBytesRemaining--) {
+            rec = UCA0RXBUF; // Read next byte
             *(UART_SM.rxPtr++) = rec; // Store byte
+        } else {
+            rec = ~UART_SM.rxTermChar;
         }
 
         if ((0 == UART_SM.rxBytesRemaining) || (rec == UART_SM.rxTermChar)) {
@@ -263,3 +268,4 @@ __interrupt void USCI_A0_ISR(void) {
         break;
     }
 }
+
