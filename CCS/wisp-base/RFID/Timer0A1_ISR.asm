@@ -52,7 +52,12 @@ CPU_is_off:		;[]i.e. we're still in latch mode. restart the RX State Machine. Tw
 
 	BIC.B	#(CM_2+CCIE), &TA0CCTL0	;[] disable capture and interrupts by capture-compare unit
 	BIC		#(CCIFG),	TA0CCTL0	;[] clear the interrupt flag
-	BIS		#(SCG1+OSCOFF+CPUOFF+GIE), SR_SP_OFF(SP);[] put tag back into LPM4
+
+	NOP
+	BIC		#(SMCLKREQEN+MCLKREQEN+ACLKREQEN), CSCTL6	;[] disable all clk requests, they prevent LPM4
+	NOP
+	BIS		#(SCG0+SCG1+OSCOFF+CPUOFF+GIE), SR			;[] put tag back into LPM4
+	NOP
 
 	POPM.A #1, R15
 	RETI							;[5] return from interrupt
@@ -67,7 +72,10 @@ Wakeup_Proc:
 	
 	MOV		#(FALSE), &isDoingLowPwrSleep ;[] clear that flag!
 
-	BIC		#(SCG1+OSCOFF+CPUOFF+GIE), SR_SP_OFF(SP);[] take tag out of LPM4
+	NOP
+	BIC		#(SCG0+SCG1+OSCOFF+CPUOFF+GIE), SR;[] take tag out of LPM4
+	NOP
+
 	POPM.A #1, R15
 	RETI							;[5] return from interrupt
 
