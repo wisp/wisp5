@@ -115,6 +115,9 @@ keepDoingRFID:
 	MOV.B	#PIN_RX,	&PRXIE		;[] Enable Port1 interrupt
 
 	; @todo Shouldn't we sleep_till_full_power here? Where else could that happen?
+	NOP
+	BIC		#(SMCLKREQEN+MCLKREQEN+ACLKREQEN), CSCTL6	;[] disable all clk requests, they prevent LPM4
+	NOP
 	BIS		#(GIE+SCG1+SCG0+OSCOFF+CPUOFF), SR			;[] sleep! (LPM4 | GIE)
 	NOP
 
