@@ -229,7 +229,7 @@ callBlockWriteHandler:
 	BIT.B	#MODE_WRITE, &(rfid.mode)
 	JNC		endDoRFID
 	CALLA	#handleBlockWrite
-	JMP		endDoRFID
+	JMP		WISP_doRFID
 
 
 ;/************************************************************************************************************************************/
