@@ -121,7 +121,7 @@ typedef struct {
     uint8_t     wordPtr;                    /* for Rd/Wr, this will hold wordPtr parsed from cmd when hook is called            */
     uint16_t    wrData;                     /* for Write this will hold the 16-bit Write Data value when hook is called         */
     uint16_t    bwrByteCount;               /* for BlockWrite this will hold the number of BYTES received                       */
-    uint8_t*    bwrBufPtr;                  /* for BlockWrite this will hold a pointer to the data buffer containing write data */
+    uint16_t*    bwrBufPtr;                  /* for BlockWrite this will hold a pointer to the data buffer containing write data */
 
     //Function Hooks
     void*       *akHook;                    /* this function is called with no params or return after an ack command response   */

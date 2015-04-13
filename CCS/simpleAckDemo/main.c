@@ -75,7 +75,7 @@ void main(void) {
   WISP_registerCallback_BLOCKWRITE(&my_blockWriteCallback);
   
   // Initialize BlockWrite data buffer.
-  uint16_t brw_array[6] = {0};
+  uint16_t bwr_array[6] = {0};
   RWData.bwrBufPtr = bwr_array;
   
   // Get access to EPC, READ, and WRITE data buffers
