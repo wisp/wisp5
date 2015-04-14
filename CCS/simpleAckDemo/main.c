@@ -43,7 +43,18 @@ void my_writeCallback (void) {
 
  */
 void my_blockWriteCallback  (void) {
-  asm(" NOP");
+  wispData.epcBuf[0]  = (wispData.blockWriteBufPtr[0] >> 8)  & 0xFF;
+  wispData.epcBuf[1]  = (wispData.blockWriteBufPtr[0])  & 0xFF;
+  wispData.epcBuf[2]  = (wispData.blockWriteBufPtr[1] >> 8)  & 0xFF;
+  wispData.epcBuf[3]  = (wispData.blockWriteBufPtr[1])  & 0xFF;
+  wispData.epcBuf[4]  = (wispData.blockWriteBufPtr[2] >> 8)  & 0xFF;
+  wispData.epcBuf[5]  = (wispData.blockWriteBufPtr[2])  & 0xFF;
+  wispData.epcBuf[6]  = (wispData.blockWriteBufPtr[3] >> 8)  & 0xFF;
+  wispData.epcBuf[7]  = (wispData.blockWriteBufPtr[3])  & 0xFF;
+  wispData.epcBuf[8]  = (wispData.blockWriteBufPtr[4] >> 8)  & 0xFF;
+  wispData.epcBuf[9]  = (wispData.blockWriteBufPtr[4])  & 0xFF;
+  wispData.epcBuf[10] = (wispData.blockWriteBufPtr[5] >> 8)  & 0xFF;
+  wispData.epcBuf[11] = (wispData.blockWriteBufPtr[5])  & 0xFF;
 }
 
 
@@ -63,6 +74,10 @@ void main(void) {
   WISP_registerCallback_WRITE(&my_writeCallback);
   WISP_registerCallback_BLOCKWRITE(&my_blockWriteCallback);
   
+  // Initialize BlockWrite data buffer.
+  uint16_t bwr_array[6] = {0};
+  RWData.bwrBufPtr = bwr_array;
+  
   // Get access to EPC, READ, and WRITE data buffers
   WISP_getDataBuffers(&wispData);
   
@@ -71,18 +86,18 @@ void main(void) {
   WISP_setAbortConditions(CMD_ID_READ | CMD_ID_WRITE /*| CMD_ID_ACK*/);
   
   // Set up EPC
-  wispData.epcBuf[0] = 0x05; // WISP version
-  wispData.epcBuf[1] = *((uint8_t*)INFO_WISP_TAGID+1); // WISP ID MSB
-  wispData.epcBuf[2] = *((uint8_t*)INFO_WISP_TAGID); // WISP ID LSB
-  wispData.epcBuf[3] = 0x33;
-  wispData.epcBuf[4] = 0x44;
-  wispData.epcBuf[5] = 0x55;
-  wispData.epcBuf[6] = 0x66;
-  wispData.epcBuf[7] = 0x77;
-  wispData.epcBuf[8] = 0x88;
-  wispData.epcBuf[9] = 0x99;
-  wispData.epcBuf[10]= 0xAA;
-  wispData.epcBuf[11]= 0xBB;
+  wispData.epcBuf[0] = 0x00; // WISP version
+  wispData.epcBuf[1] = 0x00; //*((uint8_t*)INFO_WISP_TAGID+1); // WISP ID MSB
+  wispData.epcBuf[2] = 0x00; //*((uint8_t*)INFO_WISP_TAGID); // WISP ID LSB
+  wispData.epcBuf[3] = 0x00;
+  wispData.epcBuf[4] = 0x00;
+  wispData.epcBuf[5] = 0x00;
+  wispData.epcBuf[6] = 0x00;
+  wispData.epcBuf[7] = 0x00;
+  wispData.epcBuf[8] = 0x00;
+  wispData.epcBuf[9] = 0x00;
+  wispData.epcBuf[10]= 0x00;
+  wispData.epcBuf[11]= 0x00;
   
   // Talk to the RFID reader.
   while (FOREVER) {

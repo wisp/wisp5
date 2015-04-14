@@ -43,20 +43,13 @@
 #define CMD_PARSE_AS_OVF                (0xFF)
 #define ENOUGH_BITS_TO_FORCE_EXECUTION  (200)
 
-#define RESET_BITS_VAL  (-1)        /* this is the value which will reset the TA1_SM if found in 'bits (R5)' by rfid_sm         */
+#define RESET_BITS_VAL  (-2)        /* this is the value which will reset the TA1_SM if found in 'bits (R5)' by rfid_sm         */
 
-//RFID TIMING DEFS                      /*4.08MHz                                                                                   */
-/** @todo map these better based on full range of valid vals!                                                                   */
-//Impinj Uses RTCal = 31.4us = 2.5*TARI (min possible.   RTCal goes between 2.5-3.0 TARI Per Spec)
-#define RTCAL_MIN       (2*85)
-#define RTCAL_NOM       (2*125)     /* (really only saw spread from 102 at high power to 96 at low power)                       */
-#define RTCAL_MAX       (2*150)     /*(this accounts for readers who use up to 3TARI, plus a little wiggle room)                */
-#define RTCAL_OFFS      (2*12)      /* see documentation for notes.                                                             */
-
-//Impinj Uses TRCal = 50.2us = 1.6*RTCAL(middle of road. TRCal goes between 1.1-3 RTCAL per spec. also said, 2.75-9.00 TARI)
-#define TRCAL_MIN       (2*140)
-#define TRCAL_NOM       (2*265)     /* (really only saw spread from 193 at high power to 192 at low power)                      */
-#define TRCAL_MAX       (2*451)     /* (this accounts for readers who use up to 9TARI)                                          */
+// RFID TIMINGS (Taken a bit more liberately to support both R420 and R1000).
+#define RTCAL_MIN                       (200)           // strictly calculated it should be 2.5*TARI = 2.5*6.25 = 15.625 us = 250 cycles
+#define RTCAL_MAX                       (300)           // 3*TARI = 3*6.25 = 18.75 us = 300 cycles
+#define TRCAL_MIN                       (220)           // We don't have time to do a MUL instruction, so we do 1.1*RTCAL_MIN instead of 1.1*RTCAL.
+#define TRCAL_MAX                       (900)           // We don't have time to do a MUL instruction, so we do 3*RTCAL_MAX instead of 3*RTCAL.
 
 //TIMING----------------------------------------------------------------------------------------------------------------------------//
 //Goal is 56.125/62.500/68.875us. Trying to shoot for the lower to save (a little) power.
@@ -70,8 +63,6 @@
 #define TX_TIMING_READ  (29)//58.0us
 #define TX_TIMING_WRITE (31)//60.4us
 
-#define FORCE_SKIP_INTO_RTCAL   (24)                    /* after delim, wait till data0 passes before starting TA1_SM. note     */
-                                                            /* changing this will affect timing criteria on RTCal measurement       */
 //PROTOCOL DEFS---------------------------------------------------------------------------------------------------------------------//
 //(if # is rounded to 8 that is so  cmd[n] was finished being shifted in)
 #define NUM_SEL_BITS    (48)    /* only need to parse through mask: (4+3+3+2+8+8+16 = 44 -> round to 48)                        */
@@ -130,7 +121,7 @@ typedef struct {
     uint8_t     wordPtr;                    /* for Rd/Wr, this will hold wordPtr parsed from cmd when hook is called            */
     uint16_t    wrData;                     /* for Write this will hold the 16-bit Write Data value when hook is called         */
     uint16_t    bwrByteCount;               /* for BlockWrite this will hold the number of BYTES received                       */
-    uint8_t*    bwrBufPtr;                  /* for BlockWrite this will hold a pointer to the data buffer containing write data */
+    uint16_t*    bwrBufPtr;                  /* for BlockWrite this will hold a pointer to the data buffer containing write data */
 
     //Function Hooks
     void*       *akHook;                    /* this function is called with no params or return after an ack command response   */
