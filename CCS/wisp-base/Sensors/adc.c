@@ -107,6 +107,54 @@ __interrupt void INT_ADC12(void) {
 }
 
 /**
+ * Convert RAW ADC reading to Volts.
+ *
+ * Based on formula (see user guide 25.2.1):
+ *  Nadc = 4096 * ( (Vin + .5LSB) - Vr- ) / ( Vr+ - Vr- )  where  LSB = ( Vr+ - Vr- ) / 4096
+ *
+ * Formula converted to:
+ *  Vin = (Nadc/4096) * ( Vr+ - Vr- ) + Vr- - .5LSB  where  LSB = ( Vr+ - Vr- ) / 4096
+ *
+ * @param raw RAW ADC value
+ */
+uint16_t ADC_rawToMilliVolts(uint16_t raw) {
+
+    ADC_referenceSelect reference = ADC_getReference();
+    ADC_precisionSelect precision = ADC_getPrecision();
+
+    uint16_t v_minus = 0;
+
+    uint16_t v_plus = (reference == ADC_reference_1_2V) ? 1200 :
+                      (reference == ADC_reference_2_0V) ? 2000 :
+                      (reference == ADC_reference_2_5V) ? 2500 : 0;
+
+    uint16_t factor = (precision == ADC_precision_8bit) ? 8 :
+                      (precision == ADC_precision_10bit) ? 10 :
+                      (precision == ADC_precision_12bit) ? 12 : 0;
+
+    uint16_t lsb = (v_plus - v_minus) >> factor;
+    uint32_t temp = (((uint32_t) (0x00000000 + raw) * (v_plus - v_minus))
+            >> factor) + v_plus - (lsb >> 1);
+
+    return (uint16_t) (temp & 0xFFFF);
+}
+
+/**
+ * Convert RAW ADC reading to Celcius.
+ *
+ * Based on formula (see user guide 25.2.10):
+ *  Celcius = (RAW * 0.4) - 280
+ *
+ * @param raw RAW ADC value
+ */
+uint16_t ADC_rawToCelcius(uint16_t raw) {
+    uint32_t temp = ((uint32_t) (0x00000000 + ADC_rawToMilliVolts(raw)) * 10
+            / 25) - 280;
+
+    return (uint16_t) (temp & 0xFFFF);
+}
+
+/**
  * Return true if ADC module is in the middle of a conversion, false if not.
  */
 uint8_t ADC_isBusy(void) {

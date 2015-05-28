@@ -76,6 +76,10 @@ void ADC_initCustom(ADC_referenceSelect, ADC_precisionSelect, ADC_inputSelect);
 uint16_t ADC_read(void);
 void ADC_asyncRead(void (*)(uint16_t));
 
+// Conversion functions
+uint16_t ADC_rawToMilliVolts(uint16_t);
+uint16_t ADC_rawToCelcius(uint16_t);
+
 // Get ADC status
 uint8_t ADC_isBusy(void);
 uint8_t ADC_isReady(void);
