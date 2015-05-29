@@ -36,15 +36,15 @@ void ADC_init(void) {
  */
 void ADC_initCustom(ADC_referenceSelect reference,
         ADC_precisionSelect precision, ADC_inputSelect channel) {
-    // Select reference voltage.
-    ADC_setReference(reference);
-
     // Set registers to their reset conditions..
     ADC12CTL0 = 0;
     ADC12CTL1 = 0;
     ADC12CTL2 = 0;
     ADC12MCTL0 = 0;
     ADC12IER0 = 0;
+
+    // Select reference voltage.
+    ADC_setReference(reference);
 
     // Turn on ADC.
     ADC_enable();
