@@ -38,14 +38,23 @@ A summary of protocol details is given below.
 
 Protocol summary
 ----
+
 Delimiter = 12.5us
+
 Tari = 12.5us
+
 Link Frequency (T=>R) = 160kHz
+
 Divide Ratio (DR) = 64/3
+
 Reverse modulation type = FM0
+
 RTCal (R=>T) = Nominally 15.625us (2.5*Data-0), Appears to accept 10.625us to 18.75us
+
 TRCal (R=>T) = Appears to accept 15.5us to 56.25us, reader usage of this field may vary.
+
 Data-0 (R=>T) = 6.25us 
+
 PW (R=>T) = 3.125us (0.5*(Data-0))
 
 Enjoy the WISP5, and please contribute your comments and bugfixes here!
