@@ -128,51 +128,65 @@ __interrupt void INT_ADC12(void) {
 }
 
 /**
- * Convert RAW ADC reading to Volts.
+ * Convert RAW ADC reading to MilliVolts.
  *
  * Based on formula (see user guide 25.2.1):
  *  Nadc = 4096 * ( (Vin + .5LSB) - Vr- ) / ( Vr+ - Vr- )  where  LSB = ( Vr+ - Vr- ) / 4096
  *
  * Formula converted to:
- *  Vin = (Nadc/4096) * ( Vr+ - Vr- ) + Vr- - .5LSB  where  LSB = ( Vr+ - Vr- ) / 4096
+ *  Vin = (Nadc * ( Vr+ - Vr- ) ) / 4096 + Vr- - .5LSB  where  LSB = ( Vr+ - Vr- ) / 4096
  *
  * @param raw RAW ADC value
+ * @return voltage in milli Volts (e.g. 1 ~ .001V)
  */
-uint16_t ADC_rawToMilliVolts(uint16_t raw) {
-
-    ADC_referenceSelect reference = ADC_getReference();
-    ADC_precisionSelect precision = ADC_getPrecision();
-
+uint16_t ADC_rawToVoltage(uint16_t raw) {
+    // ADC is configured to use VSS as Vr-
     uint16_t v_minus = 0;
 
+    // Get reference Voltage from settings
+    ADC_referenceSelect reference = ADC_getReference();
     uint16_t v_plus = (reference == ADC_reference_1_2V) ? 1200 :
                       (reference == ADC_reference_2_0V) ? 2000 :
                       (reference == ADC_reference_2_5V) ? 2500 : 0;
 
+    // Get ADC precision from settings
+    ADC_precisionSelect precision = ADC_getPrecision();
     uint16_t factor = (precision == ADC_precision_8bit) ? 8 :
                       (precision == ADC_precision_10bit) ? 10 :
                       (precision == ADC_precision_12bit) ? 12 : 0;
 
+    // Calculate the value of the Least Significant Bit
     uint16_t lsb = (v_plus - v_minus) >> factor;
-    uint32_t temp = (((uint32_t) (0x00000000 + raw) * (v_plus - v_minus))
-            >> factor) + v_plus - (lsb >> 1);
 
+    uint32_t temp = (uint32_t) (0x00000000 + raw);  // convert RAW value to 32bit, give us some wiggle room
+    temp  *=  (v_plus - v_minus);                   // multiply by (Vr+ - Vr-)
+    temp >>=  factor;                               // divide by 2^factor
+    temp  +=  v_minus;                              // add Vr-
+    temp  -=  (lsb >> 1);                           // subtract LSB/2
+
+    // Return only the right most word
     return (uint16_t) (temp & 0xFFFF);
 }
 
 /**
- * Convert RAW ADC reading to Celcius.
+ * Convert RAW ADC reading to deci Celcius.
  *
  * Based on formula (see user guide 25.2.10):
- *  Celcius = (RAW * 0.4) - 280
+ *  Celcius = (mV * 0.4) - 280
  *
  * @param raw RAW ADC value
+ * @return temperature in deci degree Celcius (e.g. 1 ~ .1C)
  */
-uint16_t ADC_rawToCelcius(uint16_t raw) {
-    uint32_t temp = ((uint32_t) (0x00000000 + ADC_rawToMilliVolts(raw)) * 10
-            / 25) - 280;
+int16_t ADC_rawToTemperature(uint16_t raw) {
+    // Temperature conversion is based on the voltage returned by the ADC
+    int32_t temp = (int32_t) (0x00000000 + ADC_rawToVoltage(raw));
 
-    return (uint16_t) (temp & 0xFFFF);
+    temp += 1;      // add data we probably lost (or going to lose) in the conversion
+    temp *= 4;      // multiply by 4, this is 10*.4 from the calculation
+    temp -= 2800;   // add constant offset for the sensor
+
+    // Return only the right most word
+    return (int16_t) (temp & 0xFFFF);
 }
 
 /**

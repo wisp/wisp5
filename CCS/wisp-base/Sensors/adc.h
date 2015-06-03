@@ -78,8 +78,8 @@ void ADC_asyncRead(void (*)(uint16_t));
 uint16_t ADC_critRead(void);
 
 // Conversion functions
-uint16_t ADC_rawToMilliVolts(uint16_t);
-uint16_t ADC_rawToCelcius(uint16_t);
+uint16_t ADC_rawToVoltage(uint16_t);
+int16_t ADC_rawToTemperature(uint16_t);
 
 // Get ADC status
 uint8_t ADC_isBusy(void);
