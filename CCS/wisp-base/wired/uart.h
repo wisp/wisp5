@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+void UART_setClock(void);
 void UART_init(void);
 
 void UART_asyncSend(uint8_t* txBuf, uint16_t size);
