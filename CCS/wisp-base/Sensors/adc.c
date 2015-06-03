@@ -83,8 +83,29 @@ uint16_t ADC_read(void) {
  * @param callback function to be called after conversion finishes
  */
 void ADC_asyncRead(void (*callback)(uint16_t)) {
+    ADC_enableInterrupts();
+
     ADC_SM.read_callback = callback;
     ADC12CTL0 |= ADC12SC;
+}
+
+/**
+ * Critical ADC read. Does block, does not use interrupts.
+ */
+uint16_t ADC_critRead(void) {
+    ADC_disableInterrupts();
+
+    // Enable conversion and start.
+    ADC12CTL0 |= ADC12SC + ADC12ENC;
+
+    // Wait until conversion is done.
+    while (ADC_isBusy())
+        ;
+
+    // Read voltage from memory register.
+    ADC_SM.lastValue = ADC12MEM0;
+
+    return ADC_SM.lastValue;
 }
 
 /**
@@ -210,6 +231,11 @@ void ADC_disableConversion(void) {
 void ADC_enableInterrupts(void) {
     // Enable ADC12IFG0 interrupt
     ADC12IER0 |= ADC12IE0;
+
+    __delay_cycles(75 * 16);
+
+    // TODO: is it `correct` for this line to be here?
+    __bis_SR_register(GIE); // Enable global interrupts
 }
 
 /**
