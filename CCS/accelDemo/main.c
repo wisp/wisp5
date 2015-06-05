@@ -121,20 +121,20 @@ void main(void) {
 	__delay_cycles(5);
 	ACCEL_singleSample(&accelOut);
 
-    // Set up static EPC
-	wispData.epcBuf[0] = 0x05; // WISP version
-	wispData.epcBuf[1] = *((uint8_t*)INFO_WISP_TAGID+1); // WISP ID MSB: Pull from INFO seg
-	wispData.epcBuf[2] = *((uint8_t*)INFO_WISP_TAGID); // WISP ID LSB: Pull from INFO seg
-	wispData.epcBuf[3] = 0x03;
-	wispData.epcBuf[4] = 0x04;
-	wispData.epcBuf[5] = 0x05;
-	wispData.epcBuf[6] = 0x06;
-	wispData.epcBuf[7] = 0x07;
-	wispData.epcBuf[8] = 0x08;
-	wispData.epcBuf[9] = accelOut.x;
-	wispData.epcBuf[10] = accelOut.y;
-	wispData.epcBuf[11] = accelOut.z;
-	wispData.epcBuf[12] = 0x0C;
+    // Set up EPC, copy in sensor data
+	wispData.epcBuf[0] = 0x0B; // Tag type: Accelerometer
+	wispData.epcBuf[1] = 0;			// Y value MSB
+	wispData.epcBuf[2] = accelOut.y + 128;// Y value LSB
+	wispData.epcBuf[3] = 0;			// X value MSB
+	wispData.epcBuf[4] = accelOut.x + 128;// X value LSB
+	wispData.epcBuf[5] = 0;			// Z value MSB
+	wispData.epcBuf[6] = accelOut.z + 128;// Z value LSB
+	wispData.epcBuf[7] = 0x00;		// Unused data field
+	wispData.epcBuf[8] = 0x00;		// Unused data field
+	wispData.epcBuf[9] = 0x00;		// Unused data field
+	wispData.epcBuf[10] = 0x51;		// Tag hardware revision (5.1)
+	wispData.epcBuf[11] = *((uint8_t*)INFO_WISP_TAGID+1); // WISP ID MSB: Pull from INFO seg
+	wispData.epcBuf[12] = *((uint8_t*)INFO_WISP_TAGID); // WISP ID LSB: Pull from INFO seg
 
     while (FOREVER) {
     	ACCEL_readStat(&accelOut);
@@ -144,9 +144,9 @@ void main(void) {
     	}
     	__delay_cycles(5);
 		ACCEL_singleSample(&accelOut);
-		wispData.epcBuf[9] = accelOut.x;
-		wispData.epcBuf[10] = accelOut.y;
-		wispData.epcBuf[11] = accelOut.z;
+		wispData.epcBuf[2] = accelOut.y + 128;
+		wispData.epcBuf[4] = accelOut.x + 128;
+		wispData.epcBuf[6] = accelOut.z + 128;
 
 //    	BITCLR(P2SEL1 , PIN_ACCEL_SCLK | PIN_ACCEL_MISO | PIN_ACCEL_MOSI);
 //    	BITCLR(P2SEL0 , PIN_ACCEL_SCLK | PIN_ACCEL_MISO | PIN_ACCEL_MOSI);
