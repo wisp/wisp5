@@ -131,10 +131,9 @@ void main(void) {
 	wispData.epcBuf[6] = accelOut.z + 128;// Z value LSB
 	wispData.epcBuf[7] = 0x00;		// Unused data field
 	wispData.epcBuf[8] = 0x00;		// Unused data field
-	wispData.epcBuf[9] = 0x00;		// Unused data field
-	wispData.epcBuf[10] = 0x51;		// Tag hardware revision (5.1)
-	wispData.epcBuf[11] = *((uint8_t*)INFO_WISP_TAGID+1); // WISP ID MSB: Pull from INFO seg
-	wispData.epcBuf[12] = *((uint8_t*)INFO_WISP_TAGID); // WISP ID LSB: Pull from INFO seg
+	wispData.epcBuf[9] = 0x51;		// Tag hardware revision (5.1)
+	wispData.epcBuf[10] = *((uint8_t*)INFO_WISP_TAGID+1); // WISP ID MSB: Pull from INFO seg
+	wispData.epcBuf[11] = *((uint8_t*)INFO_WISP_TAGID); // WISP ID LSB: Pull from INFO seg
 
     while (FOREVER) {
     	ACCEL_readStat(&accelOut);
