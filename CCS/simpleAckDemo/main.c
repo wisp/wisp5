@@ -43,18 +43,7 @@ void my_writeCallback (void) {
 
  */
 void my_blockWriteCallback  (void) {
-  wispData.epcBuf[0]  = (wispData.blockWriteBufPtr[0] >> 8)  & 0xFF;
-  wispData.epcBuf[1]  = (wispData.blockWriteBufPtr[0])  & 0xFF;
-  wispData.epcBuf[2]  = (wispData.blockWriteBufPtr[1] >> 8)  & 0xFF;
-  wispData.epcBuf[3]  = (wispData.blockWriteBufPtr[1])  & 0xFF;
-  wispData.epcBuf[4]  = (wispData.blockWriteBufPtr[2] >> 8)  & 0xFF;
-  wispData.epcBuf[5]  = (wispData.blockWriteBufPtr[2])  & 0xFF;
-  wispData.epcBuf[6]  = (wispData.blockWriteBufPtr[3] >> 8)  & 0xFF;
-  wispData.epcBuf[7]  = (wispData.blockWriteBufPtr[3])  & 0xFF;
-  wispData.epcBuf[8]  = (wispData.blockWriteBufPtr[4] >> 8)  & 0xFF;
-  wispData.epcBuf[9]  = (wispData.blockWriteBufPtr[4])  & 0xFF;
-  wispData.epcBuf[10] = (wispData.blockWriteBufPtr[5] >> 8)  & 0xFF;
-  wispData.epcBuf[11] = (wispData.blockWriteBufPtr[5])  & 0xFF;
+  asm(" NOP");
 }
 
 
