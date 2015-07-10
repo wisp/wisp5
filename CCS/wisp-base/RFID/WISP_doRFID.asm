@@ -114,12 +114,26 @@ keepDoingRFID:
 	CLR.B	&PRXIFG					;[] Clear interrupt flag
 	MOV.B	#PIN_RX,	&PRXIE		;[] Enable Port1 interrupt
 
+
+	; Set up timeout timer
+    MOV 	#CCIE,		TA1CCTL0 ; CCR0 interrupt enabled
+    MOV		#QUERY_TIMEOUT_PERIOD, TA1CCR0 ; Timeout period
+    MOV		#(TASSEL_1 | MC_1 | TACLR), TA1CTL ; ACLK, upmode, divide by 8, clear TAR
+
+
 	; @todo Shouldn't we sleep_till_full_power here? Where else could that happen?
 	BIS		#(GIE+SCG1+SCG0+OSCOFF+CPUOFF), SR			;[] sleep! (LPM4 | GIE)
 	NOP
 
-	;"it won't wakeup until either 8bits came in or QR
-	; /** @todo Maybe implement some sort of timeout */
+	;"it won't wakeup until either 8bits came in, or QR occurs, or timeout occurs.
+
+	; Disable timeout timer
+	MOV	#0, TA1CCTL0;
+    MOV #0, TA1CTL;
+
+	; Check to see if timeout was what (probably) woke us
+	TST.B	(rfid.abortFlag)
+	JNZ endDoRFID
 
 
 ;/************************************************************************************************************************************

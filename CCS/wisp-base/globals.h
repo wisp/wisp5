@@ -63,6 +63,8 @@
 #define TX_TIMING_READ  (29)//58.0us
 #define TX_TIMING_WRITE (31)//60.4us
 
+#define QUERY_TIMEOUT_PERIOD (65535)
+
 //PROTOCOL DEFS---------------------------------------------------------------------------------------------------------------------//
 //(if # is rounded to 8 that is so  cmd[n] was finished being shifted in)
 #define NUM_SEL_BITS    (48)    /* only need to parse through mask: (4+3+3+2+8+8+16 = 44 -> round to 48)                        */
@@ -165,6 +167,7 @@ extern void TxFM0(volatile uint8_t *data, uint8_t numBytes, uint8_t numBits, uin
 extern void RX_ISR(void);
 extern void Timer0A0_ISR(void);
 extern void Timer0A1_ISR(void);
+extern void Timer1A0_ISR(void);
 
 extern void handleQuery     (void);
 extern void handleAck       (void);
