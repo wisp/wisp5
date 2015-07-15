@@ -152,6 +152,10 @@ handleQuery:
 	; STEP 1: Parse the Command
 	;*********************************************************************************************************************************
 	
+	;Avoid deadlock, check if we timed out------------------------------------------------------------------------------------------//
+	TST.B	(rfid.abortFlag)
+	JNZ 	doneQuery
+
 	;Wait For Enough Bits-----------------------------------------------------------------------------------------------------------//
 	CMP		#NUM_QUERY_BITS, R_bits	;[1] Is R_bits>=22? Info stored in C: ( C = (R_bits>=22) )
 
@@ -264,6 +268,7 @@ queryTimingLoop:
 ;	MOV.W		#(SELA_0|SELS_3|SELM_3), &CSCTL2;
 ;	MOV.W		#(DIVA_0|DIVS_0|DIVM_0), &CSCTL3;
 
+doneQuery:
 	RETA											;[5]
 
 
@@ -277,6 +282,10 @@ queryTimingLoop:
 handleAck:
 
 ackWaits:
+	;Avoid deadlock, check if we timed out------------------------------------------------------------------------------------------//
+	TST.B	(rfid.abortFlag)
+	JNZ 	doneAck
+
 	;STEP1: Wait For Enough Bits----------------------------------------------------------------------------------------------------//
 	CMP		#NUM_ACK_BITS, R_bits	;[1] Is R_bits>=18? Info stored in C: ( C = (R_bits>=18) )
 	JNC		ackWaits				;[2] Loop until C pops up.
@@ -353,8 +362,9 @@ ackSkipHookCall:
 	
 ; If configured to abort on successful ACK, set abort flag cause it just happened!
 ackBreakOutofRFID:
-
 	BIS.B		#1, (rfid.abortFlag);[] by setting this bit we'll abort correctly!
+
+doneAck:
 	RETA
 
 ;//***********************************************************************************************************************************
@@ -472,6 +482,10 @@ QATimingLoop:
 ; REQ RN HANDLE
 ;*************************************************************************************************************************************
 handleReqRN:
+	;Avoid deadlock, check if we timed out------------------------------------------------------------------------------------------//
+	TST.B	(rfid.abortFlag)
+	JNZ 	doneReqRN
+
 	;STEP1: Wait For Enough Bits to proc RN16 (i.e. first three bytes)---------------------------------------------------------------//
 	CMP		#24, R_bits			;[1] Is R_bits>=24? Info stored in C: ( C = (R_bits>=18) )
 	JNC		handleReqRN			;[2] Loop until C pops up.
@@ -515,6 +529,10 @@ handleReqRN:
 	MOV.B	R12,	&(rfidBuf+2)	;[4] store upper CRC byte
 
 reqRN_delay:
+	;Avoid deadlock, check if we timed out------------------------------------------------------------------------------------------//
+	TST.B	(rfid.abortFlag)
+	JNZ 	doneReqRN
+
 	;STEP1: Wait For Enough Bits to proc RN16 (i.e. first three bytes)---------------------------------------------------------------//
 	CMP		#NUM_REQRN_BITS, R_bits	;[1] Is R_bits>=40? Info stored in C: ( C = (R_bits>=40) )
 	JNC		reqRN_delay				;[2] Loop until C pops up.
@@ -558,6 +576,7 @@ REQRNTimingLoop:
 ;	MOV.W		#(SELA_0|SELS_3|SELM_3), &CSCTL2;
 ;	MOV.W		#(DIVA_0|DIVS_0|DIVM_0), &CSCTL3;
 
+doneReqRN:
 	RETA
 
 
@@ -611,6 +630,10 @@ handleSelect:
 	;*********************************************************************************************************************************
 	BIT.B	#MODE_USES_SEL,	&(rfid.mode) ;[] should we even respond to command? (C = bit is set)
 	JNC		dontHandleSelect		;[] ""
+
+	;Avoid deadlock, check if we timed out------------------------------------------------------------------------------------------//
+	TST.B	(rfid.abortFlag)
+	JNZ 	doneSelect
 
 	CMP		#NUM_SEL_BITS, R_bits	;[1] Is R_bits>=44? Info stored in C: ( C = (R_bits>=44) )
 	JNC		handleSelect			;[2] Loop until C pops up.
@@ -693,6 +716,8 @@ dontHandleSelect:
 
 	CLR		&TA0CTL					;[]  disable the timer
 	MOV.B	#1,	&(rfid.isSelected)	;[]  if we're not in MODE_USES_SEL, then leave isSelected true so it handles other commands.
+
+doneSelect:
 	RETA
 
 	.end

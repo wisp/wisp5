@@ -18,7 +18,7 @@
 ;*************************************************************************************************************************************
 Timer1A0_ISR:						;[6] entry cycles into an interrupt (well, 5-6)
 	MOV.B	#1,	(rfid.abortFlag)	; Abort RFID on ISR exit
-	BIC		#(SCG1+OSCOFF+CPUOFF+GIE), SR_SP_OFF(SP);[] take tag out of LPM4
+	BIC		#(SCG1+OSCOFF+CPUOFF), SR_SP_OFF(SP);[] take tag out of LPM4
 	RETI							;[5] return from interrupt
 
 ;*************************************************************************************************************************************
