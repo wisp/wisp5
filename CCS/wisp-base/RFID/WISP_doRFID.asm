@@ -127,10 +127,6 @@ keepDoingRFID:
 
 	;"it won't wakeup until either 8bits came in, or QR occurs, or timeout occurs.
 
-	; Disable timeout timer
-	MOV	#0, TA1CCTL0;
-    MOV #0, TA1CTL;
-
 	; Check to see if timeout was what (probably) woke us
 	TST.B	(rfid.abortFlag)
 	JNZ endDoRFID
@@ -252,6 +248,10 @@ callBlockWriteHandler:
 ;/ If the abort flag has been set during the RFID transaction, return! Otherwise, keep doing RFID.									 *
 ;/************************************************************************************************************************************/
 endDoRFID:
+	; Disable timeout timer
+	MOV	#0, TA1CCTL0;
+	MOV #0, TA1CTL;
+
 	TST.B	(rfid.abortFlag)
 	JZ		keepDoingRFID
 	MOV		#(0), &(TA0CCTL0)
