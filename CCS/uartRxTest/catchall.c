@@ -26,7 +26,7 @@
 //#pragma vector=TIMER2_A0_VECTOR       // ".int38" 0xFFDC Timer2_A2 CC0
 #pragma vector=PORT1_VECTOR           // ".int39" 0xFFDE Port 1
 #pragma vector=TIMER1_A1_VECTOR       // ".int40" 0xFFE0 Timer1_A3 CC1-2, TA
-#pragma vector=TIMER1_A0_VECTOR       // ".int41" 0xFFE2 Timer1_A3 CC0
+//#pragma vector=TIMER1_A0_VECTOR       // ".int41" 0xFFE2 Timer1_A3 CC0
 #pragma vector=DMA_VECTOR             // ".int42" 0xFFE4 DMA
 #pragma vector=USCI_A1_VECTOR         // ".int43" 0xFFE6 USCI A1 Receive/Transmit
 //#pragma vector=TIMER0_A1_VECTOR       // ".int44" 0xFFE8 Timer0_A3 CC1-2, TA

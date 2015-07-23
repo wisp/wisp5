@@ -10,5 +10,8 @@
 	.sect	".int44"			    ; Timer0_A1 Vector
 	.short  Timer0A1_ISR			; int52 = Timer0A1_ISR addr.
 
+	.sect	".int41"			    ; Timer1_A0 Vector
+	.short  Timer1A0_ISR			; int41 = Timer1A0_ISR addr.
+
 	.sect ".int36"					; Port 2 Vector
 	.short  RX_ISR					; int02 = RX_ISR addr.
