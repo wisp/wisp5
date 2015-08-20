@@ -5,7 +5,7 @@
 ;*   Entering ISR takes 6 cycles (4.5.1.5.1) + Time needed to wake up from LPM1 (~4 us)
 ;*   Each BIT.B takes 5-1 cycles (4.5.1.5.4)
 ;*   Each JNZ or JZ takes 2 cycles regardless whether it is taken or not (4.5.1.5.3)
-;*   Start this ISR at t = 0.375 us + wake up time (~4 us?) TODO: Find out  this exact wakeup time or why we have this gap.
+;*   Start this ISR at t = 0.375 us + wake up time (~1.5 us?) TODO: Find out  this exact wakeup time or why we have this gap.
 ;*   Listed instruction cycles are taken from MSP430FR5969 User Guide (SLAU367F).
 ;*
 ;*   Purpose:
@@ -25,60 +25,95 @@
 	.retainrefs
 
 RX_ISR:
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     badDelim                                    ;[2]
-	
-	;; ~11.5 us in
-	
-	; Official allowed delimiter range (EPCGlobal Gen2 spec states this should be +/- 5% of 12.5 us, which is 11.875 us - 13.125 us).
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     goodDelim                                   ;[2] t = ~11.875 us
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     goodDelim                                   ;[2] t = ~12.25 us (Impinj R1000)
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     goodDelim                                   ;[2] t = ~12.625 us
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     goodDelim                                   ;[2] t = ~13 us
-	BIT.B   #PIN_RX, &PRXIN                             ;[4]
-	JNZ     goodDelim                                   ;[2] t = ~13.375 us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+
+	;;;Around 2.7us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim
+
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]
+	JNZ		badDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[3]
+	JNZ		badDelim				;[2]
+	;;;Around 8.5us
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;*********************************************************************************************************************************
+	; JUST RIGHT (8us < DELIM <16us @ 16MHz)
+	;*********************************************************************************************************************************
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim
+	;;;Around 16us
 
 ; Delim is too short so go back to sleep.
 badDelim:
