@@ -25,46 +25,46 @@
 	.retainrefs
 
 RX_ISR:
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=3.19..3.43us	(on the src fetch cycle)
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=4.41..4.66us	""
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
 
 	;;;Around 2.7us
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=3.19..3.43us	(on the src fetch cycle)
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=4.41..4.66us	""
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
 
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=3.19..3.43us	(on the src fetch cycle)
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=4.41..4.66us	""
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=4.41..4.66us	""
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim
 
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=3.19..3.43us	(on the src fetch cycle)
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=4.41..4.66us	""
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
 
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=5.64..5.88us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[3]t=3.19..3.43us	(on the src fetch cycle)
+	BIT.B	#PIN_RX,	&PRXIN		;[3]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[3]t=4.41..4.66us	""
+	BIT.B	#PIN_RX,	&PRXIN		;[3]
 	JNZ		badDelim				;[2]
 	;;;Around 8.5us
 
@@ -72,46 +72,46 @@ RX_ISR:
 	;*********************************************************************************************************************************
 	; JUST RIGHT (8us < DELIM <16us @ 16MHz)
 	;*********************************************************************************************************************************
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=8.09-8.33us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=9.31-9.56us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=10.54-10.78us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
 
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=8.09-8.33us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=9.31-9.56us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=10.54-10.78us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]t=6.86-7.11us
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
 	;;;Around 16us
 
