@@ -45,7 +45,7 @@ WISP_doRFID:
 	;Calc CRC16! (careful, it will clobber R11-R15)
 	;uint16_t crc16_ccitt(uint16_t preload,uint8_t *dataPtr, uint16_t numBytes);
 	MOV		#(dataBuf),		R13		;[2] load &dataBuf[0] as dataPtr
-	MOV		#(14),			R14		;[2] load num of bytes in ACK
+	MOV		#(DATABUFF_SIZE-2),	R14		;[2] load num of bytes in ACK
 
 	MOV 	#CRC_NO_PRELOAD, R12 	;[1] don't use a preload!
 
@@ -53,9 +53,9 @@ WISP_doRFID:
 	;onReturn: R12 holds the CRC16 value.
 
 	;STORE CRC16
-	MOV.B	R12,	&(dataBuf+15)	;[4] store lower CRC byte first
+	MOV.B	R12,	&(dataBuf+(DATABUFF_SIZE-1))	;[4] store lower CRC byte first
 	SWPB	R12						;[1] move upper byte into lower byte
-	MOV.B	R12,	&(dataBuf+14)	;[4] store upper CRC byte
+	MOV.B	R12,	&(dataBuf+(DATABUFF_SIZE-2))	;[4] store upper CRC byte
 
 
 	;Initial Config of RFID Transaction
@@ -165,6 +165,8 @@ decodeCmd_lvl2_11:
 	JZ		tagNotSelected
 
 	MOV.B 	(cmd),  R_scratch0	;[] bring in cmd[0] to parse
+	CMP.B	#0xC0,	R_scratch0	;[] is it NAK?
+	JEQ		callNAKHandler		;[]
 	CMP.B	#0xC1,	R_scratch0	;[] is it reqRN?
 	JEQ		callReqRNHandler	;[]
 	CMP.B	#0xC2,	R_scratch0	;[] is it read?
@@ -217,6 +219,12 @@ callQAHandler:
 
 callAckHandler:
 	CALLA	#handleAck
+	JMP		endDoRFID
+
+callNAKHandler:
+	NOP
+	NOP
+	NOP
 	JMP		endDoRFID
 
 callReqRNHandler:
