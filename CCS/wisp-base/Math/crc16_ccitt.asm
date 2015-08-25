@@ -28,26 +28,22 @@ r_numBits	.set	R15				;[] num of bits to calculate CRC on
 ; TODO: List Steps Here:																											 *
 ; Assumption: numBits > 0 																											 *
 ;*************************************************************************************************************************************
-crc16_ccitt:					;[11] (2+2+2+5)entry into function and setup with vals
-	INV		r_crc						;[2] #1. bring CRC preload into working form (inverted) before operation
+crc16_ccitt:                            ;[11] (2+2+2+5)entry into function and setup with vals
+    INV     r_crc                       ;[2] #1. bring CRC preload into working form (inverted) before operation
+    MOV     r_crc,      &CRCINIRES      ;[1] #2. move CRC preload to correct register
 
 crc16_a_byte:
-    SWPB    r_crc						;[1] #4, swap" CRC[i] = (CRClsb[i-1] | CRCmsb[i-1] )
-    MOV.B   r_crc,		r_index			;[1] #2. start out      VAL[i]  = (0x00|CRCmsb[i-1]) 
-    XOR.B   @r_dataPtr+,r_index			;[2] #2. bring data in  VAL[i] ^= (0x00|data[i++]) 
-    ADD     r_index,	r_index			;[1] #2. mult by 2      VAL[i]  = 2*VAL[i]
-    ADD		#crc16_LUT,	r_index			;[2] #2. offst ptr,     VAL[i] += &crc16_LUT
-    AND     #0xFF00,	r_crc			;[2] #2. mask bottByte, CRC[i] &= 0xFF00
-    XOR     @r_index,	r_crc			;[2] #3/5. XOR tableVal,  CRC[i] ^= *VAL[i] 
-	
-	DEC		r_numBytes					;[1] #6. continue calculating bytes until all are proc'd
-	JNZ		crc16_a_byte				;[2] ""
+    MOV.B	@r_dataPtr+,&CRCDIRB_L      ;[1] #3. add item to CRC checksum
 
-crc16_a_exit:	
-	INV		r_crc						;[2] #7. restore CRC to working form (invert it)
+    DEC     r_numBytes                  ;[1] #4. continue calculating bytes until all are proc'd
+    JNZ     crc16_a_byte                ;[2] ""
 
-	;r_crc is in proper return register on exit. 
-	RETA									;[8] 4 for return, 4 for moving data out to RAM (from R12)
+crc16_a_exit:
+    MOV     &CRCINIRES, r_crc           ;[1] #5. move result back from register
+    INV     r_crc                       ;[2] #6. restore CRC to working form (invert it)
+
+    ;r_crc is in proper return register on exit.
+    RETA                                ;[8] 4 for return, 4 for moving data out to RAM (from R12)
 
 
 ;*************************************************************************************************************************************
