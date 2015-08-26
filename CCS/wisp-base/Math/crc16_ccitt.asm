@@ -1,15 +1,24 @@
-;Taken from SLAA221 app note on look up table methods.
-	;C callable assembly, file: _crc_algs.s43
-	;arg1 > [R13:]R12, arg2 > [R15:]R14, others stack
-	;result > [R13:]R12
+;/***********************************************************************************************************************************/
+;/**@file		crc16_ccitt.asm
+;* 	@brief		Cyclic Redundancy Check calculations
+;* 	@details
+;*
+;* 	@author		Aaron Parks, UW Sensor Systems Lab
+;*	@author		Ivar in 't Veen, TU Delft Embedded Software Group
+;* 	@created
+;* 	@last rev
+;*
+;* 	@notes		R0:R2, 		system registers
+;*				R3,			constant generator
+;*				R4:R5, 		reserved for ROM monitor mode, else GP
+;*				R6:R11, 	6 general purpose registers
+;*				R12:R15, 	reserved for passing args
+;*/
+;/***********************************************************************************************************************************/
 
-	;R0:R2, 	system registers
-	;R3 		constant generator
-	;R4:R5, 	reserved for ROM monitor mode, else GP
-	;R6:R11, 	6 general purpose registers 
-	;R12:R15, 	reserved for passing args
 ;/INCLUDES----------------------------------------------------------------------------------------------------------------------------
     .cdecls C,LIST, "../globals.h"
+    .cdecls C,LIST, "crc16.h"
 
 	.def 	crc16_ccitt, crc16Bits_ccitt
 	.ref	crc16_LUT
