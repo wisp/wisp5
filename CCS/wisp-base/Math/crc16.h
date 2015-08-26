@@ -22,10 +22,6 @@
 extern uint16_t crc16_ccitt     (uint16_t preload,uint8_t *dataPtr, uint16_t numBytes);
 extern uint16_t crc16Bits_ccitt (uint16_t preload,uint8_t *dataPtr, uint16_t numBytes,uint16_t numBits);
 
-// CRC Look Up Table
-extern uint16_t crc16_LUT[256];
-extern uint16_t crc16_cLUT      (uint8_t *pmsg, uint8_t msg_size);
-
 #endif /* __ASSEMBLER__ */
 
 #endif /* CRC16_H_ */
