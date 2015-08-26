@@ -1,7 +1,7 @@
 /**
  * @file uart.c
  * @author Aaron Parks -- Framework + TX logic
- * @author Ivar in 't Veen -- RX logic
+ * @author Ivar in 't Veen -- RX logic + Baudrate calculations
  * @brief UART module for transmitting/receiving data using the USCI_A0 peripheral
  */
 
@@ -28,42 +28,48 @@ struct {
  * @todo Currently assumes an 8MHz SMCLK. Make robust to clock frequency changes by using 32k ACLK.
  */
 void UART_init(void) {
+    UART_initCustom(8000000, 9600);
+}
+
+/**
+ * Configure the eUSCI_A0 module in UART mode and prepare for UART transmission.
+ *
+ * @param fsmclk SMCLK frequency
+ * @param baudrate UART baudrate to be set
+ *
+ * @todo Currently assumes SMCLK. Make robust to clock frequency changes by using ACLK.
+ */
+void UART_initCustom(uint32_t fsmclk, uint32_t baudrate) {
 
     // Configure USCI_A0 for UART mode
-    UCA0CTLW0 = UCSWRST;                      // Put eUSCI in reset
-    UCA0CTLW0 |= UCSSEL__SMCLK;               // CLK = SMCLK
+    UCA0CTLW0 = UCSWRST;                        // Put eUSCI in reset
+    UCA0CTLW0 |= UCSSEL__SMCLK;                 // CLK = SMCLK
 
-    // Baud Rate calculation
-    uint32_t brclk = 8000000;
-    uint32_t baud = 9600;
+    // Baud Rate calculation -- see section 21.3.10 of MSP430 User's Guide
+    uint16_t n = fsmclk / baudrate;
+    uint16_t nfrac = ((fsmclk * 100) / baudrate) - (n * 100);
 
-    uint16_t n = brclk / baud;
-    uint16_t nfrac = (uint16_t) ((uint32_t) ((uint32_t) (brclk * 100)
-            / (uint32_t) (baud)) - (n * 100));
+    UCA0MCTLW &= ~(0xFFF0);                     // Clear modulation stage bits
+    UCA0MCTLW |= ((nfrac * 3) - 20) << 8;       // Set second modulation stage (no LUT, approximated)
 
-    uint16_t os16, ucbr, ucbrf, ucbrs;
     if (n > 3) {
-        os16 = 1;
-        ucbr = n / 16;
-        ucbrf = n - (ucbr * 16);
-        ucbrs = (nfrac * 3) - 20;
+        UCA0MCTLW |= UCOS16;                    // Enable oversampling
+        UCA0BRW = n >> 4;                       // Set clock prescaler
+        UCA0MCTLW |= (n - (n & 0xFFF0)) << 4;   // Set first modulation stage
     } else {
-        os16 = 0;
-        ucbr = n;
-        ucbrf = 0;
-        ucbrs = (nfrac * 3) - 20;
+        UCA0MCTLW &= ~UCOS16;                   // Disable oversampling
+        UCA0BRW = n;                            // Set clock prescaler
     }
 
-    UCA0BRW = ucbr;
-    UCA0MCTLW |= (ucbrs<<8) | (os16?UCOS16:0) | (ucbrf<<4);
-
+    // RX/TX Pin selection
     PUART_TXSEL0 &= ~PIN_UART_TX; // TX pin to UART module
     PUART_TXSEL1 |= PIN_UART_TX;
 
     PUART_RXSEL0 &= ~PIN_UART_RX; // RX pin to UART module
     PUART_RXSEL1 |= PIN_UART_RX;
 
-    UCA0CTLW0 &= ~UCSWRST;                    // Initialize eUSCI
+    // Initialize eUSCI
+    UCA0CTLW0 &= ~UCSWRST;
 
     // Initialize module state
     UART_SM.isTxBusy = FALSE;
