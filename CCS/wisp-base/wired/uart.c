@@ -34,13 +34,28 @@ void UART_init(void) {
     UCA0CTLW0 |= UCSSEL__SMCLK;               // CLK = SMCLK
 
     // Baud Rate calculation
-    // 8000000/(16*9600) = 52.083
-    // Fractional portion = 0.083
-    // User's Guide Table 21-4: UCBRSx = 0x04
-    // UCBRFx = int ( (52.083-52)*16) = 1
-    UCA0BR0 = 52;                             // 8000000/16/9600
-    UCA0BR1 = 0x00;
-    UCA0MCTLW |= UCOS16 | UCBRF_1;
+    uint32_t brclk = 8000000;
+    uint32_t baud = 9600;
+
+    uint16_t n = brclk / baud;
+    uint16_t nfrac = (uint16_t) ((uint32_t) ((uint32_t) (brclk * 100)
+            / (uint32_t) (baud)) - (n * 100));
+
+    uint16_t os16, ucbr, ucbrf, ucbrs;
+    if (n > 3) {
+        os16 = 1;
+        ucbr = n / 16;
+        ucbrf = n - (ucbr * 16);
+        ucbrs = (nfrac * 3) - 20;
+    } else {
+        os16 = 0;
+        ucbr = n;
+        ucbrf = 0;
+        ucbrs = (nfrac * 3) - 20;
+    }
+
+    UCA0BRW = ucbr;
+    UCA0MCTLW |= (ucbrs<<8) | (os16?UCOS16:0) | (ucbrf<<4);
 
     PUART_TXSEL0 &= ~PIN_UART_TX; // TX pin to UART module
     PUART_TXSEL1 |= PIN_UART_TX;
