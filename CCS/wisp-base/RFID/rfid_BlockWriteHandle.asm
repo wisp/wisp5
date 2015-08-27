@@ -13,6 +13,7 @@
 ;*/
 
 	.cdecls C,LIST, "../globals.h"
+	.cdecls C,LIST, "../Math/crc16.h"
 	.cdecls C,LIST, "rfid.h"
 
 R_bits      .set  R5
