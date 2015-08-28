@@ -78,12 +78,6 @@
 #define XI              (0x00)  /* 16h          XPC_W1 indicator. '0' means the tag does not support this feature.              */
 #define NSI             (0x00)  /* 17h..1Fh Numbering System Identifier. all zeros means it isn't supported and is recommended default */
 
-//CRC CALC DEFINES----------------------------------------------------------------------------------------------------------------
-#define ZERO_BIT_CRC    (0x1020)                                        /* state of the CRC16 calculation after running a '0'   */
-#define ONE_BIT_CRC     (0x0001)                                        /* state of the CRC16 calculation after running a '1'   */
-#define CRC_NO_PRELOAD  (0x0000)                                        /* don't preload it, start with 0!                      */
-#define CCITT_POLY      (0x1021)
-
 #define TREXT_ON        (1)                                             /* Tag should use TRext format for backscatter          */
 #define TREXT_OFF       (0)                                             /* Tag shouldn't use TRext format for backscatter       */
 #define WRITE_DATA_BLINK_LED    (0x00)
@@ -192,14 +186,6 @@ extern void handleBlockWrite(void);
 //This is the ugliest, non-portable code ever BUT it allows the compiler to setup the memory at compile time.
 #define STORED_PC1      ( (STORED_PC&0xFF00)>>8 )
 #define STORED_PC0      ( (STORED_PC&0x00FF)>>0 )
-
-//CRC STUFF (TO MOVE TO ANOTHER HEADER FILE SOMEDAY)--------------------------------------------------------------------------------//
-extern uint16_t crc16_ccitt     (uint16_t preload,uint8_t *dataPtr, uint16_t numBytes);
-extern uint16_t crc16Bits_ccitt (uint16_t preload,uint8_t *dataPtr, uint16_t numBytes,uint16_t numBits);
-
-//LUT for Table Driven Methods
-extern uint16_t crc16_LUT[256];
-extern uint16_t crc16_cLUT(uint8_t *pmsg, uint8_t msg_size);
 
 #endif /* __ASSEMBLER__ */
 #endif /* GLOBALS_H_ */
