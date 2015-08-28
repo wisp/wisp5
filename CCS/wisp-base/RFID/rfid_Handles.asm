@@ -332,7 +332,7 @@ ackTimingLoop:
 	;Setup TxFM0
 	;TRANSMIT (16pre,38tillTxinTxFM0 -> 54cycles)
 	MOV		#dataBuf,	R12			;[2] load the &dataBuf[0]
-	MOV		#(16),		R13			;[1] load into corr reg (numBytes)
+	MOV		#DATABUFF_SIZE,	R13			;[1] load into corr reg (numBytes)
 	MOV		#(0),		R14			;[1] load numBits=0
 	MOV.B	rfid.TRext,	R15			;[3] load TRext
 

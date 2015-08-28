@@ -29,8 +29,10 @@
 #define SUCCESS         (1)
 
 /** @todo write the comments for 4 below so I can actually read them... */
+#define EPC_WORDS       (6)                                             /* length of EPC value in words, 0 <= n <= 31           */
+
 #define CMDBUFF_SIZE    (30)                                            /* ? */
-#define DATABUFF_SIZE   (2+12+2)                                        /* first2/last2 are reserved. put data into B2..B13     */
+#define DATABUFF_SIZE   (2+(EPC_WORDS<<1)+2)                            /* first2/last2 are reserved. put data into B2..B13     */
                                                                         /*      format: [storedPC|EPC|CRC16]                    */
 #define RFIDBUFF_SIZE   (1+16+2+2+50)                                   /* longest command handled is the read command for 8 wds*/
 
@@ -73,10 +75,11 @@
 #define NUM_REQRN_BITS  (40)
 #define NUM_WRITE_BITS  (66)
 
-#define EPC_LENGTH      (0x06)  /* 10h..14h EPC Length in Words. (6 is 96bit std)                                               */
-#define UMI             (0x01)  /* 15h          User-Memory Indicator. '1' means the tag has user memory available.             */
-#define XI              (0x00)  /* 16h          XPC_W1 indicator. '0' means the tag does not support this feature.              */
-#define NSI             (0x00)  /* 17h..1Fh Numbering System Identifier. all zeros means it isn't supported and is recommended default */
+#define EPC_LENGTH      (EPC_WORDS)             /* 10h..14h EPC Length in Words. (6 is 96bit std)                               */
+#define UMI             (0x01)                  /* 15h      User-Memory Indicator. '1' means the tag has user memory available. */
+#define XI              (0x00)                  /* 16h      XPC_W1 indicator. '0' means the tag does not support this feature.  */
+#define NSI             (0x00)                  /* 17h..1Fh Numbering System Identifier.                                        */
+                                                /*          all zeros means it isn't supported and is recommended default       */
 
 #define TREXT_ON        (1)                                             /* Tag should use TRext format for backscatter          */
 #define TREXT_OFF       (0)                                             /* Tag shouldn't use TRext format for backscatter       */
@@ -87,7 +90,7 @@
 #include <stdint.h>                                                     /* use xintx_t good var defs (e.g. uint8_t)             */
 #include "config/wispGuts.h"
 
-//TYPEDEFS----------------------------------------------------------------------------------------------------------------------------
+//TYPEDEFS------------------------------------------------------------------------------------------------------------------------
 //THE RFID STRUCT FOR INVENTORY STATE VARS
 typedef struct {
     uint8_t     TRext;                      /** @todo What is this member? */
