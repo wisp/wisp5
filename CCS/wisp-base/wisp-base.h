@@ -15,6 +15,7 @@
 #include "wired/spi.h"
 #include "wired/uart.h"
 #include "Sensors/accel.h"
+#include "Sensors/adc.h"
 #include "nvm/fram.h"
 #include "RFID/rfid.h"
 #include "config/wispGuts.h"
