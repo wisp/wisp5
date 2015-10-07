@@ -10,7 +10,7 @@
 /**
  * State variables for the ADC module
  */
-struct {
+static struct {
     uint16_t lastValue; // Last read value (RAW bits)
 
     ADC_referenceSelect reference;
@@ -323,6 +323,9 @@ void ADC_setInputChannel(ADC_inputSelect channel) {
         // Use alternate channel muxing
         ADC12CTL3 |= ADC12TCMAP;
 
+        // Enable temperature sensor
+        REFCTL0 &= ~REFTCOFF;
+
         // Select temperature input channel
         ADC12MCTL0 &= ~(0x1F);
         ADC12MCTL0 |= ADC12INCH_30;
@@ -330,6 +333,9 @@ void ADC_setInputChannel(ADC_inputSelect channel) {
     default:
         // Use default channel muxing
         ADC12CTL3 &= ~ADC12TCMAP;
+
+        // Disable temperature sensor
+        REFCTL0 |= REFTCOFF;
 
         // Select analog input channel
         ADC12MCTL0 &= ~(0x1F);
@@ -352,6 +358,10 @@ ADC_inputSelect ADC_getInputChannel(void) {
  * Set ADC to sample and hold pulse mode.
  */
 void ADC_setSampleHold(void) {
-    // Enable using sample and hold pulse mode and use clock as source.
+    // Set sampling time to 64 ADC12CLK cycles.
+    ADC12CTL0 &= ~(0x0F00);
+    ADC12CTL0 |= ADC12SHT0_4;
+
+    // Enable using sample and hold pulse mode and use MCLK as source.
     ADC12CTL1 |= ADC12SHP + ADC12SSEL1;
 }
