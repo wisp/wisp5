@@ -25,6 +25,7 @@
 	.retainrefs
 
 RX_ISR:
+;	XOR.B   #PIN_AUX3,	&PIN_AUX3_OUT
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
@@ -60,12 +61,13 @@ RX_ISR:
 	JNZ		badDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[4]
-	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[3]
-	JNZ		badDelim				;[2]
-	BIT.B	#PIN_RX,	&PRXIN		;[3]
-	JNZ		badDelim				;[2]
+;	BIT.B	#PIN_RX,	&PRXIN		;[4]
+;	JNZ		badDelim				;[2]
+;	BIT.B	#PIN_RX,	&PRXIN		;[3]
+;	JNZ		badDelim				;[2]
+;	BIT.B	#PIN_RX,	&PRXIN		;[3]
+;	JNZ		badDelim				;[2]
+
 	;;;Around 8.5us
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -102,21 +104,31 @@ RX_ISR:
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
-	JNZ		goodDelim
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
+	BIT.B	#PIN_RX,	&PRXIN		;[4]
+	JNZ		goodDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]
-	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]
-	JNZ		goodDelim
-	BIT.B	#PIN_RX,	&PRXIN		;[4]
-	JNZ		goodDelim
+;	XOR.B   #PIN_AUX3,	&PIN_AUX3_OUT
+;	BIT.B	#PIN_RX,	&PRXIN		;[4]
+;	JNZ		goodDelim
+;	BIT.B	#PIN_RX,	&PRXIN		;[4]
+;	JNZ		goodDelim
+;	BIT.B	#PIN_RX,	&PRXIN		;[4]
+;	JNZ		goodDelim
+;	BIT.B	#PIN_RX,	&PRXIN		;[4]
+;	JNZ		goodDelim
 	;;;Around 16us
 
 ; Delim is too short so go back to sleep.
 badDelim:
+;	XOR.B   #PIN_AUX3,	&PIN_AUX3_OUT
+	BIC.W	#(CCIE),&TA0CCTL0		; Disable timer interrupt to avoid entering lpm1 instead of lpm4.
+	CLR		&TA0CTL					;[] Disable TimerA since we should again look for the next delim and stay in lpm4
 	BIT.B   R15, R14                                    ;[]
 	BIC     #CCIFG, &TA0CCTL0                           ;[] Clear the interrupt flag for Timer0A0 Compare (safety).
 	CLR     &TA0R                                       ;[] Reset TAR value
@@ -131,6 +143,7 @@ goodDelim:                                              ;[24]
 	CLR.B   &PRXIE                                      ;[4] Disable the Port 1 Interrupt
 	BIC     #(SCG1), 0(SP)                              ;[5] Enable the DCO to start counting
 	BIS.W   #(CM_2+CCIE), &TA0CCTL0                     ;[5] Wake up so we can make use of Timer0A0 control registers?
+	MOV		#(TASSEL__SMCLK+MC__CONTINOUS) , &TA0CTL 		;[] SMCLK and continuous mode.  (TASSEL1 + MC1), now timer0A0 can be started
 
 startupT0A0_ISR:                                        ;[22]
 	BIC     #CCIFG, &TA0CCTL0                           ;[5] Clear the interrupt flag for Timer0A0 Compare

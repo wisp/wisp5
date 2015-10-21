@@ -56,9 +56,11 @@ void WISP_init(void) {
 
     CSCTL0_H = 0xA5;
     CSCTL1 = DCORSEL + DCOFSEL_3; //8MHz
-    CSCTL2 = SELA_0 + SELM_3;
+    CSCTL2 = SELA_1 + SELM_3;
     CSCTL2 |= SELS_3;
     CSCTL3 = DIVA_0 + DIVS_0 + DIVM_0;
+    CSCTL6 &= ~(MODCLKREQEN|SMCLKREQEN|MCLKREQEN);
+    CSCTL6 |= ACLKREQEN;
 
     // Initialize Gen2 standard memory banks
     RWData.EPCBankPtr = &dataBuf[0];                    // volatile

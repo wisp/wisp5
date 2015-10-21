@@ -33,6 +33,7 @@
 
 // P1.4 - AUX3 -  INPUT/OUTPUT
 #define		PIN_AUX3			(BIT4)
+#define 	PIN_AUX3_OUT		(P1OUT)
 #define 	PAUX3IN				(P1IN)
 #define 	PDIR_AUX3			(P1DIR)
 #define		PAUX3SEL0			(P1SEL0)
@@ -199,6 +200,7 @@
  */
 /** @todo: Default for unused pins should be output, not tristate.  */
 /** @todo:  Make sure the Tx port pin should be tristate not output and unused pin to be output*/
+// Set as many as possible pins to output and drive them low
 #ifndef __ASSEMBLER__
 #define setupDflt_IO() \
     P1OUT = 0x00;\
@@ -206,11 +208,11 @@
     P3OUT = 0x00;\
     P4OUT = 0x00;\
     PJOUT = 0x00;\
-    P1DIR = 0x00;\
-    PJDIR = PIN_LED2;\
-    P2DIR = PIN_TX;\
-    P3DIR = 0x00;\
-    P4DIR = PIN_ACCEL_CS | PIN_LED1 | PIN_ACCEL_EN;\
+    P1DIR = ~PIN_RX_BITLINE;\
+    PJDIR = 0xFF;\
+    P2DIR = ~PIN_RX;\
+    P3DIR = 0xFF;\
+    P4DIR = ~PIN_MEAS;\
 
 #endif /* ~__ASSEMBLER__ */
 
