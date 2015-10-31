@@ -128,6 +128,29 @@ __interrupt void INT_ADC12(void) {
 }
 
 /**
+ * Correct RAW ADC reading according to calibration procedure
+ *
+ * See user guide 1.14.3.2
+ *
+ * @param raw RAW ADC value
+ * @return corrected RAW ADC value
+ */
+uint16_t ADC_rawCorrection(uint16_t raw) {
+    // Convert input to 32 bit to have prevent overflows
+    int32_t temp = (int32_t) (0x00000000 + raw);
+
+    // Get calibration values from TLV structure
+    uint16_t adc_gain   = (uint16_t) *((uint16_t*)0x1A16);
+    uint16_t adc_offset = (uint16_t) *((uint16_t*)0x1A18);
+
+    // Correct measurement for device specific offset/gain
+    temp = ((temp * adc_gain) >> 15) + adc_offset;
+
+    // Return only the right most word
+    return (uint16_t) (temp & 0xFFFF);
+}
+
+/**
  * Convert RAW ADC reading to MilliVolts.
  *
  * Based on formula (see user guide 25.2.1):
@@ -158,32 +181,41 @@ uint16_t ADC_rawToVoltage(uint16_t raw) {
     // Calculate the value of the Least Significant Bit
     uint16_t lsb = (v_plus - v_minus) >> factor;
 
-    uint32_t temp = (uint32_t) (0x00000000 + raw);  // convert RAW value to 32bit, give us some wiggle room
-    temp  *=  (v_plus - v_minus);                   // multiply by (Vr+ - Vr-)
-    temp >>=  factor;                               // divide by 2^factor
-    temp  +=  v_minus;                              // add Vr-
-    temp  -=  (lsb >> 1);                           // subtract LSB/2
+    uint32_t temp = (uint32_t) (0x00000000 + ADC_rawCorrection(raw)); // convert RAW value to 32bit, give us some wiggle room
+    temp *= (v_plus - v_minus);                   // multiply by (Vr+ - Vr-)
+    temp >>= factor;                              // divide by 2^factor
+    temp += v_minus;                              // add Vr-
+    temp -= (lsb >> 1);                           // subtract LSB/2
 
     // Return only the right most word
     return (uint16_t) (temp & 0xFFFF);
 }
 
 /**
- * Convert RAW ADC reading to deci Celcius.
- *
- * Based on formula (see user guide 25.2.10):
- *  Celcius = (mV * 0.4) - 280
+ * Convert RAW ADC reading to milli degree Celcius.
  *
  * @param raw RAW ADC value
- * @return temperature in deci degree Celcius (e.g. 1 ~ .1C)
+ * @return temperature in milli degree Celcius (e.g. 1 ~ .001C)
  */
 int16_t ADC_rawToTemperature(uint16_t raw) {
-    // Temperature conversion is based on the voltage returned by the ADC
-    int32_t temp = (int32_t) (0x00000000 + ADC_rawToVoltage(raw));
+    // Convert input to 32 bit to have prevent overflows
+    int32_t temp = (int32_t) (0x00000000 + ADC_rawCorrection(raw));
 
-    temp += 1;      // add data we probably lost (or going to lose) in the conversion
-    temp *= 4;      // multiply by 4, this is 10*.4 from the calculation
-    temp -= 2800;   // add constant offset for the sensor
+    // Get callibration values (for 30C and 85C) from TLV structure
+    ADC_referenceSelect reference = ADC_getReference();
+    uint16_t adc_ref30 = (reference == ADC_reference_1_2V) ? *((uint16_t*)0x1A1A) :
+                         (reference == ADC_reference_2_0V) ? *((uint16_t*)0x1A1E) :
+                         (reference == ADC_reference_2_5V) ? *((uint16_t*)0x1A22) : 0;
+
+    uint16_t adc_ref85 = (reference == ADC_reference_1_2V) ? *((uint16_t*)0x1A1C) :
+                         (reference == ADC_reference_2_0V) ? *((uint16_t*)0x1A20) :
+                         (reference == ADC_reference_2_5V) ? *((uint16_t*)0x1A24) : 0;
+
+    // Linearly aproximate temperature
+    temp -= adc_ref30;
+    temp *= 1000;
+    temp *= (85000 - 30000) / (adc_ref85 - adc_ref30);
+    temp += 30000;
 
     // Return only the right most word
     return (int16_t) (temp & 0xFFFF);
@@ -218,7 +250,7 @@ void ADC_disable(void) {
     ADC_disableConversion();
 
     // Disable ADC conversions
-    ADC12CTL0 &= ~ADC12ENC;
+    ADC12CTL0 &= ~ADC12ON;
 }
 
 /**
@@ -236,7 +268,7 @@ void ADC_enableConversion(void) {
  */
 void ADC_disableConversion(void) {
     // Disable ADC
-    ADC12CTL0 &= ~ADC12ON;
+    ADC12CTL0 &= ~ADC12ENC;
 }
 
 /**
@@ -274,7 +306,7 @@ void ADC_setReference(ADC_referenceSelect reference) {
     ADC_SM.reference = reference;
 
     // Set reference voltage.
-    REFCTL0 = reference + REFON + REFTCOFF;
+    REFCTL0 = reference + REFTCOFF; // REFON is not needed, ADC automatically enables REF
 
     // Wait for REF to stabilize.
     __delay_cycles(75 * 16);
