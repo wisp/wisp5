@@ -55,12 +55,12 @@ void WISP_init(void) {
     PRXEOUT |= PIN_RX_EN; /** TODO: enable PIN_RX_EN only when needed in the future */
 
     CSCTL0_H = 0xA5;
-    CSCTL1 = DCORSEL + DCOFSEL_3; //8MHz
-    CSCTL2 = SELA_1 + SELM_3;
-    CSCTL2 |= SELS_3;
+    CSCTL1 = DCOFSEL_0; //1MHz
+    CSCTL2 = SELA__VLOCLK + SELS_3 + SELM_3;
     CSCTL3 = DIVA_0 + DIVS_0 + DIVM_0;
-    CSCTL6 &= ~(MODCLKREQEN|SMCLKREQEN|MCLKREQEN);
-    CSCTL6 |= ACLKREQEN;
+	BITCLR(CSCTL6 , (MODCLKREQEN|SMCLKREQEN|MCLKREQEN));
+	BITSET(CSCTL6 , ACLKREQEN);
+
 
     // Initialize Gen2 standard memory banks
     RWData.EPCBankPtr = &dataBuf[0];                    // volatile

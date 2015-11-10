@@ -23,7 +23,7 @@
 #pragma vector=TIMER3_A0_VECTOR       // ".int35" 0xFFD6 Timer3_A2 CC0
 //#pragma vector=PORT2_VECTOR           // ".int36" 0xFFD8 Port 2
 #pragma vector=TIMER2_A1_VECTOR       // ".int37" 0xFFDA Timer2_A2 CC1, TA
-#pragma vector=TIMER2_A0_VECTOR       // ".int38" 0xFFDC Timer2_A2 CC0
+//#pragma vector=TIMER2_A0_VECTOR       // ".int38" 0xFFDC Timer2_A2 CC0
 #pragma vector=PORT1_VECTOR           // ".int39" 0xFFDE Port 1
 #pragma vector=TIMER1_A1_VECTOR       // ".int40" 0xFFE0 Timer1_A3 CC1-2, TA
 //#pragma vector=TIMER1_A0_VECTOR       // ".int41" 0xFFE2 Timer1_A3 CC0

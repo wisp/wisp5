@@ -212,7 +212,7 @@
     PJDIR = 0xFF;\
     P2DIR = ~PIN_RX;\
     P3DIR = 0xFF;\
-    P4DIR = ~PIN_MEAS;\
+    P4DIR = (~PIN_MEAS & ~PIN_ACCEL_EN);\
 
 #endif /* ~__ASSEMBLER__ */
 

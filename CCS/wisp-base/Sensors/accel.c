@@ -18,10 +18,15 @@ uint8_t const ADXL_READ_DEVID[] = {ADXL_CMD_READ_REG,ADXL_REG_DEVID_AD,0x00};
 uint8_t const ADXL_REAsxD_STATUS[] = {ADXL_CMD_READ_REG,ADXL_REG_STATUS,0x00};
 uint8_t const ADXL_READ_XYZ_8BIT[] = {ADXL_CMD_READ_REG,ADXL_REG_XDATA,0x00,0x00,0x00};
 uint8_t const ADXL_READ_XYZ_16BIT[] = {ADXL_CMD_READ_REG,ADXL_REG_XDATA_L,0x00,0x00,0x00,0x00,0x00,0x00};
-uint8_t const ADXL_CONFIG_MEAS[] = {ADXL_CMD_WRITE_REG,ADXL_REG_POWER_CTL,0x02}; // Put the ADXL into measurement mode
+uint8_t const ADXL_READ_XYZ_16BIT_FIFO[] = {ADXL_CMD_READ_FIFO,0x00,0x00,0x00,0x00,0x00,0x00};
+uint8_t const ADXL_CONFIG_MEAS[] = {ADXL_CMD_WRITE_REG,ADXL_REG_POWER_CTL,0x22}; // Put the ADXL into measurement mode
 uint8_t const ADXL_CONFIG_STBY[] = {ADXL_CMD_WRITE_REG,ADXL_REG_POWER_CTL,0x00}; // Put the ADXL into standby mode
 uint8_t const ADXL_CONFIG_RESET[] = {ADXL_CMD_WRITE_REG,ADXL_REG_SOFT_RESET,0x52};
-uint8_t const ADXL_CONFIG_FILTER[] = {ADXL_CMD_WRITE_REG,ADXL_REG_FILTER_CTL,0x17};
+uint8_t const ADXL_CONFIG_FILTER[] = {ADXL_CMD_WRITE_REG,ADXL_REG_FILTER_CTL,0x14}; // 100Hz ODR +-8g
+uint8_t const ADXL_CONFIG_INTERRUPT[] = {ADXL_CMD_WRITE_REG,ADXL_REG_INTMAP1,0X01}; // Data ready interrupt, map to INT1
+
+uint8_t const ADXL_CONFIG_FIFO_CTL[] = {ADXL_CMD_WRITE_REG,ADXL_REG_FIFO_CONTROL,0X0A}; // FIFO in stream mode
+uint8_t const ADXL_CONFIG_FIFO_SAMPLE[] = {ADXL_CMD_WRITE_REG,ADXL_REG_FIFO_SAMPLES,6}; // 1*6 data to be stored in FIFO
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -87,6 +92,18 @@ BOOL ACCEL_initialize() {
     BITCLR(POUT_ACCEL_CS, PIN_ACCEL_CS);
     SPI_transaction(gpRxBuf, (uint8_t*)ADXL_CONFIG_MEAS, sizeof(ADXL_CONFIG_MEAS));
     BITSET(POUT_ACCEL_CS, PIN_ACCEL_CS);
+//    __delay_cycles(10);
+//    BITCLR(POUT_ACCEL_CS, PIN_ACCEL_CS);
+//    SPI_transaction(gpRxBuf, (uint8_t*)ADXL_CONFIG_INTERRUPT, sizeof(ADXL_CONFIG_INTERRUPT));
+//    BITSET(POUT_ACCEL_CS, PIN_ACCEL_CS);
+//    __delay_cycles(10);
+//    BITCLR(POUT_ACCEL_CS, PIN_ACCEL_CS);
+//    SPI_transaction(gpRxBuf, (uint8_t*)ADXL_CONFIG_FIFO_CTL, sizeof(ADXL_CONFIG_FIFO_CTL));
+//    BITSET(POUT_ACCEL_CS, PIN_ACCEL_CS);
+//    __delay_cycles(10);
+//    BITCLR(POUT_ACCEL_CS, PIN_ACCEL_CS);
+//    SPI_transaction(gpRxBuf, (uint8_t*)ADXL_CONFIG_FIFO_SAMPLE, sizeof(ADXL_CONFIG_FIFO_SAMPLE));
+//    BITSET(POUT_ACCEL_CS, PIN_ACCEL_CS);
 
     SPI_releasePort();
 
@@ -130,6 +147,24 @@ void ACCEL_standby() {
 /**
  * Grab one sample from the ADXL362 accelerometer
  */
+
+BOOL ACCEL_singleSample_FIFO(threeAxis_t_8* result) {
+
+    while(!SPI_acquirePort());
+
+    BITCLR(POUT_ACCEL_CS, PIN_ACCEL_CS);
+    SPI_transaction(gpRxBuf, (uint8_t*)ADXL_READ_XYZ_16BIT_FIFO, sizeof(ADXL_READ_XYZ_16BIT_FIFO));
+    BITSET(POUT_ACCEL_CS, PIN_ACCEL_CS);
+
+    SPI_releasePort();
+
+    result->x = ((gpRxBuf[2] & 0x0F) << 4)|((gpRxBuf[1] & 0xF0) >> 4);
+    result->y = ((gpRxBuf[4] & 0x0F) << 4)|((gpRxBuf[3] & 0xF0) >> 4);
+    result->z = ((gpRxBuf[6] & 0x0F) << 4)|((gpRxBuf[5] & 0xF0) >> 4);
+
+    return SUCCESS;
+}
+
 BOOL ACCEL_singleSample(threeAxis_t_8* result) {
 
     while(!SPI_acquirePort());
