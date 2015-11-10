@@ -43,6 +43,7 @@ R_TRext     .set  	R15				; Entry: TRext? is in R_TRext
 	.def  TxFM0
 
 TxFM0:
+	CLR		&TA0CTL				;[] Disable TimerA when doing the TX related stuffs to allow the system to go to lpm4 for sleep.
 	BIS.W #BIT7, &PTXDIR;
 	BIS.W #BIT7, &PTXOUT;
 	BIC.W #BIT7, &PTXOUT;

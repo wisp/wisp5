@@ -93,7 +93,8 @@ keepDoingRFID:
 	CLR		&TA0CCTL0
 
 	MOV		#(SCS+CAP+CCIS_1),&TA0CCTL0	;[] Sync on Cap Src and Cap Mode on Rising Edge(Inverted). don't set all bits until in RX ISR though.
-	MOV		#(TASSEL__SMCLK+MC__CONTINOUS) , &TA0CTL 		;[] SMCLK and continuous mode.  (TASSEL1 + MC1)
+	; @Saman: commenting the below line and adding that inside RX_ISR
+;	MOV		#(TASSEL__SMCLK+MC__CONTINOUS) , &TA0CTL 		;[] SMCLK and continuous mode.  (TASSEL1 + MC1)
 
 	;Setup rfid_rxSM vars
 	MOV		#RESET_BITS_VAL, R_bits	 ;[]MOD
@@ -117,13 +118,14 @@ keepDoingRFID:
 
 
 	; Set up timeout timer
+	; @Saman: I am not sure if we actually need that in expense of avoiding from going to lpm4.
     MOV 	#CCIE,		TA1CCTL0 ; CCR0 interrupt enabled
     MOV		#QUERY_TIMEOUT_PERIOD, TA1CCR0 ; Timeout period
     MOV		#(TASSEL_1 | MC_1 | TACLR), TA1CTL ; ACLK, upmode, divide by 8, clear TAR
 
 
 	; @todo Shouldn't we sleep_till_full_power here? Where else could that happen?
-	BIS		#(GIE+SCG1+SCG0+OSCOFF+CPUOFF), SR			;[] sleep! (LPM4 | GIE)
+	BIS		#LPM4+GIE, SR			;[] sleep! (LPM4 | GIE)
 	NOP
 
 	;"it won't wakeup until either 8bits came in, or QR occurs, or timeout occurs.

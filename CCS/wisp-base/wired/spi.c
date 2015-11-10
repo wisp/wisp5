@@ -42,7 +42,7 @@ BOOL SPI_initialize() {
 //  UCA1CTL0 = UCMST | UCSYNC | UCCKPH | UCMSB;      // This instruction seem to work wrong since UA1CTL0 is an 8-bit register.
     UCA1CTL0 = (UCMST>>8) | (UCSYNC>>8) | (UCCKPH>>8) | (UCMSB>>8);
     UCA1CTL1 = UCSSEL_3 | UCSWRST;
-    UCA1BR0 = 3; // 500KHz for 4MHz clock
+    UCA1BR0 = 0; // 1MHz for 1MHz clock
     UCA1BR1 = 0;
     UCA1IFG = 0;
     UCA0MCTLW = 0;  // No modulation, I don't think it is vital to write this command since the default should be like that.
