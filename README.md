@@ -45,7 +45,7 @@ Tari = 12.5us
 
 Link Frequency (T=>R) = 160kHz
 
-Divide Ratio (DR) = 64/3
+Divide Ratio (DR) = 8
 
 Reverse modulation type = FM0
 
