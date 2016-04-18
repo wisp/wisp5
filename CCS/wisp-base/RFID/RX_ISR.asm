@@ -61,6 +61,7 @@ RX_ISR:
 	JNZ		badDelim				;[2]
 	BIT.B	#PIN_RX,	&PRXIN		;[4]
 	JNZ		badDelim				;[2]
+
 ;	BIT.B	#PIN_RX,	&PRXIN		;[4]
 ;	JNZ		badDelim				;[2]
 ;	BIT.B	#PIN_RX,	&PRXIN		;[3]
