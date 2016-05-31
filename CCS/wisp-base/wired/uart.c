@@ -23,24 +23,63 @@ struct {
 } UART_SM;
 
 /**
+ * Configure the internal clocks for UART transmission.
+ *
+ * @todo This is not a fix, it only hides the real problem. See UART_init() todo.
+ */
+void UART_setClock(void) {
+    CSCTL0_H = 0xA5;
+    CSCTL1 = DCORSEL + DCOFSEL_3; //8MHz
+    CSCTL2 = SELA_0 + SELM_3;
+    CSCTL2 |= SELS_3;
+    CSCTL3 = DIVA_0 + DIVS_0 + DIVM_0;
+}
+
+/**
  * Configure the eUSCI_A0 module in UART mode and prepare for UART transmission.
  *
- * @todo Currently assumes an 8MHz SMCLK. Make robust to clock frequency changes by using 32k ACLK.
+ * @todo Currently assumes (and enforces) an 8MHz SMCLK. Make robust to clock frequency changes by using 32k ACLK.
  */
 void UART_init(void) {
 
+#define LOW_SPEED
+
+// According to User's Guide Section 21.3.13:
+// BRCLK        Baudrate    UCOS16  UCBRx   UCBRFx  UCBRSx
+// 8 000 000    9600        1       52      1       0x49
+//    32 768    9600        0       3       -       0x92
+
+#if defined(LOW_SPEED)
+#define BRCLK   (UCSSEL__ACLK)
+#define UCOS    (0)
+#define UCBR    (3)
+#define UCBRF   (0)
+#define UCBRS   (0x92)
+#else
+#define BRCLK   (UCSSEL__SMCLK)
+#define UCOS    (UCOS16)
+#define UCBR    (52)
+#define UCBRF   (1)
+#define UCBRS   (0x49)
+#endif
+
+    // Configure master clock
+    UART_setClock();
+
     // Configure USCI_A0 for UART mode
-    UCA0CTLW0 = UCSWRST;                      // Put eUSCI in reset
-    UCA0CTLW0 |= UCSSEL__SMCLK;               // CLK = SMCLK
+    UCA0CTLW0 = UCSWRST;          // Put eUSCI in reset
+    UCA0CTLW0 |= BRCLK;
+
 
     // Baud Rate calculation
     // 8000000/(16*9600) = 52.083
     // Fractional portion = 0.083
     // User's Guide Table 21-4: UCBRSx = 0x04
     // UCBRFx = int ( (52.083-52)*16) = 1
-    UCA0BR0 = 52;                             // 8000000/16/9600
-    UCA0BR1 = 0x00;
-    UCA0MCTLW |= UCOS16 | UCBRF_1;
+    UCA0MCTLW |= UCOS;
+    UCA0MCTLW |= (UCBRS << 8);
+    UCA0MCTLW |= (UCBRF << 1);
+    UCA0BRW = UCBR;
 
     PUART_TXSEL0 &= ~PIN_UART_TX; // TX pin to UART module
     PUART_TXSEL1 |= PIN_UART_TX;
@@ -48,7 +87,7 @@ void UART_init(void) {
     PUART_RXSEL0 &= ~PIN_UART_RX; // RX pin to UART module
     PUART_RXSEL1 |= PIN_UART_RX;
 
-    UCA0CTLW0 &= ~UCSWRST;                    // Initialize eUSCI
+    UCA0CTLW0 &= ~UCSWRST;        // Initialize eUSCI
 
     // Initialize module state
     UART_SM.isTxBusy = FALSE;
@@ -56,7 +95,6 @@ void UART_init(void) {
     UART_SM.isRxBusy = FALSE;
     UART_SM.rxBytesRemaining = 0;
     UART_SM.rxTermChar = '\0';
-
 }
 
 /**
