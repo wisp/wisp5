@@ -5,8 +5,7 @@ Welcome to the WISP5 firmware repository!
 
 Got questions? Check out the tutorials and discussion board at: http://wisp5.wikispaces.com
 
-Schematics for the WISP5 prototype are temporarily available here: 
-http://sensor.cs.washington.edu/wisp5/wisp5-schem.pdf
+Schematics for the WISP5 prototype are available here: http://wisp5.wikispaces.com/WISP+Hardware
 
 Interested in building a host-side application to talk with WISPs? Look no further than the SLLURP library for configuring LLRP-based RFID readers:
 https://github.com/ransford/sllurp
