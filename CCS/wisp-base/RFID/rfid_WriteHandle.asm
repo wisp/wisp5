@@ -15,15 +15,16 @@
 ;*/
 ;/***********************************************************************************************************************************/
 
-   .cdecls C,LIST, "../globals.h"
-   .cdecls C,LIST, "rfid.h"
+    .cdecls C,LIST, "../globals.h"
+    .cdecls C,LIST, "../Math/crc16.h"
+    .cdecls C,LIST, "rfid.h"
 
 R_writePtr	.set  R13   			;[0] ptr to which membank at which offset will be reading from
 R_handle	.set  R12				;[0] store inbound handle for Tx here.
 R_scratch1	.set  R14
 R_scratch0	.set  R15
 
-   	.ref cmd,memBank_RES			;[0] declare TACCR1
+	.ref cmd,memBank_RES			;[0] declare TACCR1
 	.def  handleWrite
 	.global RxClock, TxClock
 	.sect ".text"

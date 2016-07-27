@@ -120,7 +120,7 @@ ModeC_process:
 ModeC_queryRep:
 	MOV.W   #(0), &TA0CTL                                    ;[4] turn off the timer
 	MOV.B   #CMD_PARSE_AS_QUERY_REP, &cmd                    ;[4] set the cmd[0] to a known value for queryRep to parse.
-	BIC.W   #(SCG1+CPUOFF+OSCOFF), SR_SP_OFF(SP)             ;[5] Turn off interrupts, enable clock!
+	BIC.W   #(LPM4), SR_SP_OFF(SP)             ;[5] Turn off interrupts, enable clock!
 	RETI                                                     ;[5] return from interrupt
 
 
@@ -143,7 +143,7 @@ ModeD_process:
 
 ModeD_setupNewByte:
 	CLR     R_bitCt                                          ;[1] Clear bit count for next byte in cmd buffer.
-	BIC     #(SCG1+CPUOFF+OSCOFF), SR_SP_OFF(SP)             ;[5] enable the clock so the doRFIDThread can parse b7-b4! *Leave Interrupts On.
+	BIC     #(LPM4), SR_SP_OFF(SP)             ;[5] enable the clock so the doRFIDThread can parse b7-b4! *Leave Interrupts On.
 	RETI                                                     ;[5] return from interrupt
 
 
@@ -152,15 +152,16 @@ ModeD_setupNewByte:
 ;*************************************************************************************************************************************
 failed_RTCal:
 failed_TRCal:
+   	CLR		&TA0CTL				;[] Disable TimerA before exiting the ISR after a fail observed to allow going to lpm4.
 	CLR     R_bits                                           ;[1] reset R5 for rentry into RX State Machine
 	CLR     R_bitCt                                          ;[]
-	BIS.B   #PIN_RX, &PRXIES                                 ;[4] wait again for #1 to fire on falling edge
-	MOV.B   #PIN_RX, &PRXIE                                  ; Enable the interrupt
-	CLR.B   &PRXIFG                                          ;[] clr any pending flags (safety)
 	; TODO The following shouldn't overwrite other bits in PRXSEL!?
 	BIC.B   #PIN_RX, &PRXSEL0                                ;[] disable TimerA1
 	BIC.B   #PIN_RX, &PRXSEL1                                ;[] disable TimerA1
 	BIC.W   #4010h, TA0CCTL0                                 ;[5] Turn off TimerA1 -> 4010h -> b14+b4 -> TA0CCTL1 &= ~CM0+CCIE (CM0-> CAPTURE ON RISING EDGE)
+	CLR.B   &PRXIFG                                          ;[] clr any pending flags (safety)
+	BIS.B   #PIN_RX, &PRXIES                                 ;[4] wait again for #1 to fire on falling edge
+	MOV.B   #PIN_RX, &PRXIE                                  ; Enable the interrupt
 	
 	RETI                                                     ;[5] return from interrupt
 

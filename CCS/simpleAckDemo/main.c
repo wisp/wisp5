@@ -56,7 +56,7 @@ void my_blockWriteCallback  (void) {
 void main(void) {
 
   WISP_init();
-  
+
   // Register callback functions with WISP comm routines
   WISP_registerCallback_ACK(&my_ackCallback);
   WISP_registerCallback_READ(&my_readCallback);
@@ -72,10 +72,10 @@ void main(void) {
   
   // Set up operating parameters for WISP comm routines
   WISP_setMode( MODE_READ | MODE_WRITE | MODE_USES_SEL); 
-  WISP_setAbortConditions(CMD_ID_READ | CMD_ID_WRITE /*| CMD_ID_ACK*/);
+  WISP_setAbortConditions(CMD_ID_READ | CMD_ID_WRITE | CMD_ID_ACK);
   
   // Set up EPC
-  wispData.epcBuf[0] = 0x00; 		// Tag type
+  wispData.epcBuf[0] = 0x0B; 		// Tag type
   wispData.epcBuf[1] = 0;			// Unused data field
   wispData.epcBuf[2] = 0;			// Unused data field
   wispData.epcBuf[3] = 0;			// Unused data field

@@ -14,6 +14,7 @@
 
 ;/INCLUDES----------------------------------------------------------------------------------------------------------------------------
     .cdecls C,LIST, "../globals.h"
+    .cdecls C,LIST, "../Math/crc16.h"
     .cdecls C,LIST, "rfid.h"
 	.def  handleQuery, handleAck, handleQR, handleQA, handleReqRN, handleSelect
 	.global TxClock, RxClock
@@ -207,7 +208,7 @@ handleQuery:
 	MOV.B	R_scratch0, 	&rfid.rn8_ind ;[4] store new rn8_ind
 
 	;Grab the RN8 (as a 16bit val) and use for RN16 and slotCount
-	ADD		#MEM_MAP_INFOB_START, R_scratch0 ;[] offset the index into the table
+	ADD		#INFO_WISP_RAND_TBL, R_scratch0 ;[] offset the index into the table
 	MOV		@R_scratch0, 	R_scratch0 ;[] bring in random val (as int, grab some other byte too!)
 	MOV		R_scratch0,		&rfid.handle ;[] store the handle (don't store slotCount just yet!)
 
@@ -331,7 +332,7 @@ ackTimingLoop:
 	;Setup TxFM0
 	;TRANSMIT (16pre,38tillTxinTxFM0 -> 54cycles)
 	MOV		#dataBuf,	R12			;[2] load the &dataBuf[0]
-	MOV		#(16),		R13			;[1] load into corr reg (numBytes)
+	MOV		#DATABUFF_SIZE,	R13			;[1] load into corr reg (numBytes)
 	MOV		#(0),		R14			;[1] load numBits=0
 	MOV.B	rfid.TRext,	R15			;[3] load TRext
 

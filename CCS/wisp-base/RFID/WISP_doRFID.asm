@@ -16,6 +16,7 @@
 
 ;/INCLUDES----------------------------------------------------------------------------------------------------------------------------
     .cdecls C,LIST, "../globals.h"
+    .cdecls C,LIST, "../Math/crc16.h"
     .cdecls C,LIST, "rfid.h"
 	.def  WISP_doRFID
 	.global handleAck, handleQR, handleReqRN, handleRead, handleWrite, handleSelect, WISP_doRFID, TxClock, RxClock
@@ -45,7 +46,7 @@ WISP_doRFID:
 	;Calc CRC16! (careful, it will clobber R11-R15)
 	;uint16_t crc16_ccitt(uint16_t preload,uint8_t *dataPtr, uint16_t numBytes);
 	MOV		#(dataBuf),		R13		;[2] load &dataBuf[0] as dataPtr
-	MOV		#(14),			R14		;[2] load num of bytes in ACK
+	MOV		#(DATABUFF_SIZE-2),	R14		;[2] load num of bytes in ACK
 
 	MOV 	#CRC_NO_PRELOAD, R12 	;[1] don't use a preload!
 
@@ -53,9 +54,9 @@ WISP_doRFID:
 	;onReturn: R12 holds the CRC16 value.
 
 	;STORE CRC16
-	MOV.B	R12,	&(dataBuf+15)	;[4] store lower CRC byte first
+	MOV.B	R12,	&(dataBuf+(DATABUFF_SIZE-1))	;[4] store lower CRC byte first
 	SWPB	R12						;[1] move upper byte into lower byte
-	MOV.B	R12,	&(dataBuf+14)	;[4] store upper CRC byte
+	MOV.B	R12,	&(dataBuf+(DATABUFF_SIZE-2))	;[4] store upper CRC byte
 
 
 	;Initial Config of RFID Transaction
@@ -92,7 +93,8 @@ keepDoingRFID:
 	CLR		&TA0CCTL0
 
 	MOV		#(SCS+CAP+CCIS_1),&TA0CCTL0	;[] Sync on Cap Src and Cap Mode on Rising Edge(Inverted). don't set all bits until in RX ISR though.
-	MOV		#(TASSEL__SMCLK+MC__CONTINOUS) , &TA0CTL 		;[] SMCLK and continuous mode.  (TASSEL1 + MC1)
+	; @Saman: commenting the below line and adding that inside RX_ISR
+;	MOV		#(TASSEL__SMCLK+MC__CONTINOUS) , &TA0CTL 		;[] SMCLK and continuous mode.  (TASSEL1 + MC1)
 
 	;Setup rfid_rxSM vars
 	MOV		#RESET_BITS_VAL, R_bits	 ;[]MOD
@@ -116,13 +118,14 @@ keepDoingRFID:
 
 
 	; Set up timeout timer
+	; @Saman: I am not sure if we actually need that in expense of avoiding from going to lpm4.
     MOV 	#CCIE,		TA1CCTL0 ; CCR0 interrupt enabled
     MOV		#QUERY_TIMEOUT_PERIOD, TA1CCR0 ; Timeout period
     MOV		#(TASSEL_1 | MC_1 | TACLR), TA1CTL ; ACLK, upmode, divide by 8, clear TAR
 
 
 	; @todo Shouldn't we sleep_till_full_power here? Where else could that happen?
-	BIS		#(GIE+SCG1+SCG0+OSCOFF+CPUOFF), SR			;[] sleep! (LPM4 | GIE)
+	BIS		#LPM4+GIE, SR			;[] sleep! (LPM4 | GIE)
 	NOP
 
 	;"it won't wakeup until either 8bits came in, or QR occurs, or timeout occurs.
@@ -165,6 +168,8 @@ decodeCmd_lvl2_11:
 	JZ		tagNotSelected
 
 	MOV.B 	(cmd),  R_scratch0	;[] bring in cmd[0] to parse
+	CMP.B	#0xC0,	R_scratch0	;[] is it NAK?
+	JEQ		callNAKHandler		;[]
 	CMP.B	#0xC1,	R_scratch0	;[] is it reqRN?
 	JEQ		callReqRNHandler	;[]
 	CMP.B	#0xC2,	R_scratch0	;[] is it read?
@@ -217,6 +222,12 @@ callQAHandler:
 
 callAckHandler:
 	CALLA	#handleAck
+	JMP		endDoRFID
+
+callNAKHandler:
+	NOP
+	NOP
+	NOP
 	JMP		endDoRFID
 
 callReqRNHandler:
