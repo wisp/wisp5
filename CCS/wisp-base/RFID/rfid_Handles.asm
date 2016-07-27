@@ -208,7 +208,7 @@ handleQuery:
 	MOV.B	R_scratch0, 	&rfid.rn8_ind ;[4] store new rn8_ind
 
 	;Grab the RN8 (as a 16bit val) and use for RN16 and slotCount
-	ADD		#MEM_MAP_INFOB_START, R_scratch0 ;[] offset the index into the table
+	ADD		#INFO_WISP_RAND_TBL, R_scratch0 ;[] offset the index into the table
 	MOV		@R_scratch0, 	R_scratch0 ;[] bring in random val (as int, grab some other byte too!)
 	MOV		R_scratch0,		&rfid.handle ;[] store the handle (don't store slotCount just yet!)
 
