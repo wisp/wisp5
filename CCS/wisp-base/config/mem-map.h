@@ -34,6 +34,8 @@
 
 #define BYTES_IN_INFO_SEG       (128)                                   /* number of bytes in a info  mem segment from MSP430FR5969*/
 
+#define WISP_INITIALIZED_MAGIC	(0x1FED)
+
 //  #define BANK_B                  (0) // Needed?
 //  #define BANK_C                  (1) // Needed?
 //  #define BANK_D                  (2) // Needed?
@@ -46,7 +48,9 @@
 // START of WISP MEMORY MAP
 ///////////////////////////////////////////////////////////////////////////////
 // The WISP's "unique" tag ID. Two bytes.
-#define INFO_WISP_TAGID         (MEM_MAP_WISP_START)
+#define INFO_WISP_INITIALIZED	(MEM_MAP_WISP_START) // Once WISP initialized, contains magic number 0x1FED
+
+#define INFO_WISP_TAGID         (INFO_WISP_INITIALIZED +2)
 
 // A table of some random 16 bit numbers, so the WISP doesn't need to
 //  generate the whole thing on the fly. 2 bytes each.

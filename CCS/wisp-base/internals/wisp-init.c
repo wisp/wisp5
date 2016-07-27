@@ -62,6 +62,14 @@ void WISP_init(void) {
 	BITSET(CSCTL6 , ACLKREQEN);
 
 
+	// Check for magic number in WISP_INITIALIZED location, signaling that info
+	// tables have been populated. If it's not there, don't go any further!
+	// If you are stuck here, run run-once to populate the tables.
+	while(*((uint16_t*)INFO_WISP_INITIALIZED) != WISP_INITIALIZED_MAGIC){
+		PLED1OUT |= PIN_LED1;
+		PLED2OUT |= PIN_LED2;
+	}
+
     // Initialize Gen2 standard memory banks
     RWData.EPCBankPtr = &dataBuf[0];                    // volatile
     RWData.RESBankPtr = (uint8_t*) MEM_MAP_INFOC_START; // nonvolatile

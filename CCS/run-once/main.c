@@ -50,7 +50,13 @@ void main (void) {
 
   uint16_t  RN16Vals[NUM_RN16_2_STORE]; // table of RN16s to store into FLASH for WISP use
 
-  WISP_init();
+  WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
+
+  // Disable the GPIO power-on default high-impedance mode to activate previously configured port settings.
+  PM5CTL0 &= ~LOCKLPM5;		// Lock LPM5.
+
+  // Setup default IO
+  setupDflt_IO();
 
   // Generate RN16 table
   genRN16Vals(RN16Vals, NUM_RN16_2_STORE);
@@ -62,6 +68,9 @@ void main (void) {
 
   // Store UUID and RN16 table to memory
   FRAM_write_int_array((uint16_t*)(INFO_WISP_RAND_TBL), NUM_RN16_2_STORE, RN16Vals);
+
+  // Set magic number in info mem to signal that tables are filled
+  FRAM_write((uint16_t*)(INFO_WISP_INITIALIZED), WISP_INITIALIZED_MAGIC);
 
   // Blink slow when done.
   while(FOREVER) {
