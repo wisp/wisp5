@@ -16,7 +16,7 @@
 
 TxClock:
 	MOV.B           #(0xA5), &CSCTL0_H ;[] Switch to corr Tx frequency 12MHz
-	MOV.W           #(DCORSEL|DCOFSEL_6), &CSCTL1 ;
+	MOV.W           #(DCORSEL|DCOFSEL_4), &CSCTL1 ;
 	MOV.W           #(SELA_1|SELM_3), &CSCTL2     ;
 	BIS.W           #(SELS_3), &CSCTL2
 	MOV.W           #(DIVA_0|DIVS_1|DIVM_1), &CSCTL3 ;

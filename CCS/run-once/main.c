@@ -41,7 +41,6 @@ void ledBlinks (uint8_t count, uint16_t duration) {
 	}
 	return;
 }
-
 /**
  * Generates and stores a table of random numbers into Info Mem segment B/C.
  *  These are used by the WISP as a unique ID and for RN16 generation in Aloha protocol.
