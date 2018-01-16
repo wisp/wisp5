@@ -31,7 +31,7 @@ Configuration
 
 3. Program and run your WISP5 with run-once, and wait for LED to pulse to indicate completion.
 
-4. Program and run your WISP5 with simpleAckDemo and ensure that it can communicate with the reader. Use an Impinj Speedway series reader with Tari = 6.25us or 7.14us, link frequency = 640kHz, and reverse modulation type = FM0.
+4. Program and run your WISP5 with simpleAckDemo and ensure that it can communicate with the reader. Use an Impinj Speedway series reader with Tari = 16.67us, link frequency = 436kHz, and reverse modulation type = FM0.
 
 A summary of protocol details is given below.
 
@@ -40,21 +40,21 @@ Protocol summary
 
 Delimiter = 12.5us
 
-Tari = 6.25us
+Tari = 16.67us
 
-Link Frequency (T=>R) = 640kHz
+Link Frequency (T=>R) = 436kHz
 
 Divide Ratio (DR) = 64/3
 
 Reverse modulation type = FM0
 
-RTCal (R=>T) = Nominally 15.625us (2.5*Data-0), Appears to accept 12.5us to 18.75us
+RTCal (R=>T) = Appears to accept 41.675us to 50us
 
-TRCal (R=>T) = Appears to accept 13.75us to 56.25us, reader usage of this field may vary.
+TRCal (R=>T) = Appears to accept 45.8425us to 150us, reader usage of this field may vary.
 
-Data-0 (R=>T) = 6.25us
+Data-0 (R=>T) = 16.67us
 
-PW (R=>T) = 3.125us (0.5*(Data-0))
+PW (R=>T) = 8.335us (0.5*(Data-0))
 
 Enjoy the WISP5, and please contribute your comments and bugfixes here!
 
