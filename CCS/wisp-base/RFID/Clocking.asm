@@ -15,7 +15,7 @@
 	.def  TxClock, RxClock
 
 TxClock:
-	MOV.B           #(0xA5), &CSCTL0_H ;[] Switch to corr Tx frequency 12MHz
+	MOV.B           #(0xA5), &CSCTL0_H ;[] Switch to corr Tx frequency 8MHz
 	MOV.W           #(DCORSEL|DCOFSEL_4), &CSCTL1 ;
 	MOV.W           #(SELA_1|SELM_3), &CSCTL2     ;
 	BIS.W           #(SELS_3), &CSCTL2

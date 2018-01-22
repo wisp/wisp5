@@ -54,13 +54,13 @@
 #define TRCAL_MAX                       (2400)           // We don't have time to do a MUL instruction, so we do 3*RTCAL_MAX instead of 3*RTCAL.
 
 //TIMING----------------------------------------------------------------------------------------------------------------------------//
-//Goal is 56.125/62.500/68.875us. Trying to shoot for the lower to save (a little) power.
-//Note: 1 is minVal here due to the way decrement timing loop works. 0 will act like (0xFFFF+1)!
-#define TX_TIMING_QUERY (24)/*53.5-60us (depends on which Q value is loaded). */
-#define TX_TIMING_ACK   (20)/*60.0us*/  //(14,58.6us)
+#define TX_TIMING_QUERY (128)//50us
+#define TX_TIMING_ACK   (135)//50us
 
-#define TX_TIMING_QR    (52)//58.8us
-#define TX_TIMING_QA    (48)//60.0us**
+#define TX_TIMING_QR    (269)//83.34us
+#define TX_TIMING_QA    (188)//50us
+
+//These timing values do not match with 436kHz at this moment.
 #define TX_TIMING_REQRN (33)//60.4us
 #define TX_TIMING_READ  (29)//58.0us
 #define TX_TIMING_WRITE (31)//60.4us

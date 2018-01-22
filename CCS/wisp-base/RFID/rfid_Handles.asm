@@ -62,11 +62,10 @@ QRTimeToBackscatter:
 	MOV		#(0),	&(rfid.slotCount) ;[]as a safety leave slot count in predicted state. prolly don't need this, no one ever uses slot count afterwards anyways....
 
 	;Delay is a bit tricky because of stupid Q. Q adds 8*Q cycles to the timing. So we need to subtract that (grr...)
-	;MOV		#TX_TIMING_QR,  R5		;[]
-	;기존의 TX_TIMING_QR는 29.0625us딜레이 되었음. 440kHz에서는 약 50 + 16.67*2 us를 딜레이시켜야함(여기선 2bit만 확인) (RX clock 사용중)
-	;따라서 54.2775 us를 더 딜레이해야됨, 1이 커질때마다 4클락이 증가하여 딜레이는 0.25us 증가
-	;그러므로 현 52보다 217증가한 269을 입력
-	MOV		#269,	R5	;default = 52, add = 217(54.2775us), result = 269
+	;TX_TIMING_QR in 640kHz code delayed only 29.0625us.
+	;436kHz should delay about 50 + 16.67*2us(at QR we only check 2 bits)
+	;So we need 54.2775us more. And we are using RX clock.
+	MOV		#TX_TIMING_QR,  R5		;[]
 
 QRTimingLoop:
 	NOP								;[1]
@@ -243,15 +242,13 @@ doneShifting:
 
 	RETA								;[5] not our turn; return from call
 
-	;슬롯 카운트를 제외하고 일단 R420의 응답을 확인하기 위해 RETA를 주석처리하여 제거
-	;NOP
-	;NOP
 
 rspWithQuery:
 	;Delay is a bit tricky because of stupid Q. Q adds 8*Q cycles to the timing. So we need to subtract that (grr...)
-	;MOV		#TX_TIMING_QUERY,  R5	;[]
-	;TX_TIMING_QUERY를 바꿨는데도 간격이 안바껴서 이걸로 함. 여기서 clock 스피드는 RX_clock, 1증가할때마다 0.25us 증가
-	MOV		#128,  R5	;[] default = 24, add = 104(26us), result = 128
+	;TX_TIMING_QUERY in 640kHz code delayed only 24us.
+	;436kHz should delay about 50us
+	;So we need 26us more. And we are using RX clock.
+	MOV		#TX_TIMING_QUERY,  R5	;[]
 
 queryTimingLoop:
 	NOP								;[1]
@@ -332,12 +329,10 @@ ackWaits:
 	;;;;;;;;;;;;;;
 	;keepDoingHandleACK if it is passed RN16	check
 keepDoHandleACK:	
-	;Delay for 10us(28.5cycles) so we can hit the 57.0us mark (remember, we're at 2.85MHz now)
-	;MOV		#TX_TIMING_ACK, R5		;[2]
-	;기존의 TX_TIMING_ACK는 14us딜레이 되었음. 440kHz에서는 약 50us를 딜레이시켜야함 따라서(RX clock 사용중)
-	;따라서 36us를 더 딜레이해야됨, 1이 커질때마다 5클락이 증가하여 딜레이는 0.3125us 증가
-	;그러므로 현 20보다 115증가한 135을 입력
-	MOV		#135,	R5	;default = 20, add = 138(43.125us), result = 158
+	;TX_TIMING_ACK in 640kHz code delayed only 14us.
+	;436kHz should delay about 50us
+	;So we need 36us more. And we are using RX clock.
+	MOV		#TX_TIMING_ACK, R5		;[2]
 
 ackTimingLoop:
 	NOP								;[1]
@@ -462,10 +457,10 @@ QAdoneShifting:
 
 rspWithQueryAdj:
 	;Delay is a bit tricky because of stupid Q. Q adds 8*Q cycles to the timing. So we need to subtract that (grr...)
-	;MOV		#TX_TIMING_QA,  R5		;[]
-	;현재는 약 15us정도 딜레이 되고 있는중, 우리는 이것을 50us까지 늘려야 함
-	;따라서 560clock(35us)를 늘려야 함
-	MOV		#188,  R5	;default = 48, add = 140  ->  result = 188
+	;TX_TIMING_QA in 640kHz code delayed only 15us.
+	;436kHz should delay about 50us
+	;So we need 35us more. And we are using RX clock.
+	MOV		#TX_TIMING_QA,  R5		;[]
 
 QATimingLoop:
 	NOP								;[1]
@@ -500,6 +495,7 @@ QATimingLoop:
 
 ;*************************************************************************************************************************************
 ; REQ RN HANDLE
+; 436kHz branch does not provide REQ RN, at this moment!!
 ;*************************************************************************************************************************************
 handleReqRN:
 	;Avoid deadlock, check if we timed out------------------------------------------------------------------------------------------//
@@ -576,7 +572,7 @@ rspWithReqRN:
 REQRNTimingLoop:
 	NOP								;[1]
 	DEC		R5						;[1] Info stored in N: N = (R5<0)
-	JNZ		REQRNTimingLoop			;[2] Break out of loop on N
+	JNZ		REQRNTimingLoop			;[2] Break out of loop on N ----- 436kHz branch didn't fixed
 
 	;Setup TxFM0
 	;TRANSMIT (16pre,38tillTxinTxFM0 -> 54cycles)
@@ -585,7 +581,7 @@ REQRNTimingLoop:
 	MOV		#(0),		R14			;[1] load numBits=0
 	MOV.B	rfid.TRext,	R15			;[3] load TRext
 ;;;;;;;;;;;;;;;;;;;;;;; NO HIT
-	CALLA	#TxFM0					;[5] call the routine
+	;CALLA	#TxFM0					;[5] call the routine
 
 	;Restore faster Rx Clock
 	;MOV		&(INFO_ADDR_RXUCS0), &UCSCTL0 ;[] switch to corr Rx Frequency
