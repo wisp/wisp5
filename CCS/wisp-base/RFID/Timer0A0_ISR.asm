@@ -39,13 +39,6 @@ Timer0A0_ISR:                                                ;[6]
 	
 	BIC     #CCIFG, &TA0CCTL0                                ;[4] Clear interrupt flag so the timer can continue.
 	
-
-
-	;MOV		&(0x1808), R_scratch0
-	;MOV		R_newCt, 0(R_scratch0)
-	;ADD		#(2), &(0x1808)
-
-
 	; Check how many bits we have received.
 	CMP     #(2), R_bits                                     ;[2]
 	JGE     ModeD_process                                    ;[2] R_bits = 2  -> rest of data bits

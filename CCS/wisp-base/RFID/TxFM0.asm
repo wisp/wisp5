@@ -56,7 +56,7 @@ TxFM0:
 	;PUSH    R_scratch0				;[3]
 	;PUSH    R_scratch1				;[3] Note: Could optimize this line down into the pilot if necessary
 	;PUSH    R_scratch2				;[3] "" <- this one would need a jump conditional and would be messy.
-;35 clock
+
 	CALLA #TxClock	;Switch to TxClock
 
 	;MOV		&(INFO_ADDR_TXUCS0), &UCSCTL0;[] switch to corr Tx Frequency
