@@ -39,6 +39,13 @@ Timer0A0_ISR:                                                ;[6]
 	
 	BIC     #CCIFG, &TA0CCTL0                                ;[4] Clear interrupt flag so the timer can continue.
 	
+
+
+	;MOV		&(0x1808), R_scratch0
+	;MOV		R_newCt, 0(R_scratch0)
+	;ADD		#(2), &(0x1808)
+
+
 	; Check how many bits we have received.
 	CMP     #(2), R_bits                                     ;[2]
 	JGE     ModeD_process                                    ;[2] R_bits = 2  -> rest of data bits
@@ -64,8 +71,8 @@ ModeA_process:
 	;RTCAL is correct length, now proceed to compute pivot.
 	MOV     R_newCt, R_scratch2                              ;[1] Save RTCAL to compare with TRCAL later on.
 	RRA     R_newCt                                          ;[1] pivot = RTCAL/2
-	MOV     #(-1), R_pivot                                   ;[1] Preload pivot value with MAX (i.e. 0xFFFFh)
-	SUB     R_newCt, R_pivot                                 ;[1] Make pivot negative (so we can use ADD later on).
+	MOV     #(0), R_pivot                                   ;[1] Preload pivot value with MAX (i.e. 0xFFFFh)
+	SUB     R_newCt, R_pivot                                 ;[1] Make pivot negative (so we can use ADD later on).d
 	INC     R_bits                                           ;[1] RTCAL done, proceed to read TRCAL and/or 1st data bit.
 	RETI                                                     ;[5] Return
 
@@ -104,7 +111,7 @@ ModeB_TRCal:
 ModeC_process:
 	ADD     R_pivot, R_newCt                                 ;[1] -pivot + delta > FFFF will result in carry bit.
 	ADDC.B  @R_dest+, -1(R_dest)                             ;[5] Add R_dest to itself, i.e. multiply by 2, i.e. shift 1 bit left. Then add carry from previous operation.
-	
+
 	; We have now received 2 bits, check if it's the QueryRep command. (6.3.2.12.2.3)
 	MOV.B   (cmd), R_scratch0                                ;[2] Pull cmd_buffer (b1b0)
 	AND.B   #0x03, R_scratch0                                ;[2] Mask out everything but b1b0 (i.e. use only first 2 bits)

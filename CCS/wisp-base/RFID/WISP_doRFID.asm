@@ -123,7 +123,6 @@ keepDoingRFID:
     MOV		#QUERY_TIMEOUT_PERIOD, TA1CCR0 ; Timeout period
     MOV		#(TASSEL_1 | MC_1 | TACLR), TA1CTL ; ACLK, upmode, divide by 8, clear TAR
 
-
 	; @todo Shouldn't we sleep_till_full_power here? Where else could that happen?
 	BIS		#LPM4+GIE, SR			;[] sleep! (LPM4 | GIE)
 	NOP
