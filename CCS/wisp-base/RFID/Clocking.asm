@@ -3,10 +3,10 @@
 ;*
 ;*	@author		Saman Naderiparizi, UW Sensor Systems Lab
 ;*	@created	3-10-14
- *
- *  @436kHz modifier    Shin JaeMin, SKKU Computer Network Lab
- *  @http://comnet.skku.edu/
- *  @modified   22.1.2018
+;*
+;*  @436kHz modifier    Shin JaeMin, SKKU Computer Network Lab
+;*  @http://comnet.skku.edu/
+;*  @modified   22.1.2018
 ;*
 ;*
 ;*	@section	Command Handles
