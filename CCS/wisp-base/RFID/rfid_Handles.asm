@@ -6,6 +6,10 @@
 ;*	@created	7-15-11
 ;*	@last rev	7-25-11
 ;*
+;*  @436kHz modifier    Shin JaeMin, SKKU Computer Network Lab
+;*  @http://comnet.skku.edu/
+;*  @modified   22.1.2018
+;*
 ;*	@notes		x
 ;*
 ;*	@section	Command Handles

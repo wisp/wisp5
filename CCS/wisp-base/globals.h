@@ -6,6 +6,10 @@
  *  @created    4.14.12
  *  @last rev
  *
+ *  @436kHz modifier    Shin JaeMin, SKKU Computer Network Lab
+ *  @http://comnet.skku.edu/
+ *  @modified   22.1.2018
+ *
  *  @notes
  */
 
